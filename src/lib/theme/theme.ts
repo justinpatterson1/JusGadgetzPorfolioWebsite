@@ -1,4 +1,5 @@
-import { PALETTES, type PaletteName } from "./palettes";
+import { PALETTES, DEFAULT_PALETTE, type PaletteName } from "./palettes";
+import { DEFAULT_TWEAKS, tweakVars, type Tweaks } from "./tweaks";
 
 export type ThemeMode = "light" | "dark";
 
@@ -12,14 +13,10 @@ export const DEFAULT_THEME: ThemeMode = "light";
  * The accent custom properties to write inline on <html> for a given palette.
  *
  * `--accent-strong` intentionally resolves to `accentLight` in dark mode — the
- * light-mode value is too dark to read on a dark surface (PRD 00 §3).
+ * light-mode value is too dark to read on a dark surface (Prompt 00, dark mode).
  *
  * `--accent-glow` is not written here — globals.css derives it from
  * `--accent-light` so the alpha stays in one place.
- *
- * `--bg` is deliberately NOT returned here. The light theme writes it inline and
- * inline styles beat the `html[data-theme="dark"]` selector, so dark mode must
- * *remove* it rather than override it. See `applyTheme`.
  */
 export function accentVars(
   palette: PaletteName,
@@ -37,21 +34,37 @@ export function accentVars(
 }
 
 /**
- * Apply theme + palette to <html>. Safe to call on the client only.
+ * Apply theme, palette and tweaks to <html>. Client only.
  *
- * Keep the `--bg` removal in place: without it, the inline light-mode value
- * wins over the dark theme block and the page background stays light.
+ * Keep the `--bg` removal in place: `tweakVars` writes an inline light-mode
+ * background, and an inline style beats the `html[data-theme="dark"]` selector,
+ * so dark mode has to clear it rather than override it.
  */
-export function applyTheme(mode: ThemeMode, palette: PaletteName): void {
+export function applyTheme(
+  mode: ThemeMode,
+  palette: PaletteName,
+  tweaks: Tweaks = DEFAULT_TWEAKS,
+): void {
   const root = document.documentElement;
 
   root.dataset.theme = mode;
 
-  for (const [name, value] of Object.entries(accentVars(palette, mode))) {
+  const vars = { ...accentVars(palette, mode), ...tweakVars(tweaks, mode) };
+  for (const [name, value] of Object.entries(vars)) {
     root.style.setProperty(name, value);
   }
 
   if (mode === "dark") {
     root.style.removeProperty("--bg");
   }
+}
+
+/** Narrows an arbitrary stored string to a theme mode. */
+export function parseMode(raw: string | null): ThemeMode {
+  return raw === "dark" || raw === "light" ? raw : DEFAULT_THEME;
+}
+
+/** Narrows an arbitrary stored string to a known palette name. */
+export function parsePalette(raw: string | null): PaletteName {
+  return raw !== null && raw in PALETTES ? (raw as PaletteName) : DEFAULT_PALETTE;
 }

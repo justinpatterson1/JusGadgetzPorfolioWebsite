@@ -1,15 +1,15 @@
 import { Chip, Chips, Cta, Eyebrow, H2, Lede, Pill } from "@/components/ui";
 import { PALETTES } from "@/lib/theme/palettes";
 
+import { SpecimenControls } from "./specimen-controls";
+
 /**
- * TEMPORARY — foundations specimen (PRD 00).
+ * TEMPORARY — foundations specimen (Prompt 00).
  *
  * This page exists only so the token set, type scale and layout can be verified
- * by eye. PRD 14 replaces it with the real composition of Hero → About →
- * Skills → Projects → Services → TechTicker → Footer. Delete it then.
- *
- * To check dark mode before the theme toggle exists (PRD 04), run in the
- * console:  document.documentElement.dataset.theme = 'dark'
+ * by eye. The section prompts (01–08) replace it with the real composition of
+ * Sidebar → Hero → About → Skills → Projects → Services → TechTicker → Footer.
+ * Delete it then, along with SpecimenControls.
  */
 
 const SURFACE_TOKENS = [
@@ -76,7 +76,7 @@ function Swatch({ token, note }: { token: string; note?: string }) {
 export default function FoundationsSpecimen() {
   return (
     <>
-      {/* Placeholder for the fixed rail (PRD 03) so the body offset reads as
+      {/* Placeholder for the fixed rail (prompt 01) so the body offset reads as
           intentional during review. */}
       <div
         aria-hidden
@@ -87,15 +87,17 @@ export default function FoundationsSpecimen() {
         <section className="section">
           <div className="wrap">
             <p className="text-eyebrow uppercase text-accent-strong">
-              PRD 00 — Foundations
+              Prompt 00 — Foundation
             </p>
             <h1 className="text-hero mt-4 text-ink">Tokens, type, layout.</h1>
             <p className="text-lede mt-6 max-w-xl text-ink-2">
-              A temporary specimen page. Every value below reads a token — flip{" "}
-              <code className="text-chip">data-theme</code> on{" "}
-              <code className="text-chip">&lt;html&gt;</code> and the whole page
-              should re-theme with no unstyled patches.
+              A temporary specimen page. Every value below reads a token — flip
+              the theme, palette or tweaks below and the whole page should
+              re-theme with no unstyled patches and no re-render.
             </p>
+            <div className="mt-8">
+              <SpecimenControls />
+            </div>
           </div>
         </section>
 
@@ -185,7 +187,7 @@ export default function FoundationsSpecimen() {
 
         <section className="section">
           <div className="wrap">
-            <Eyebrow>PRD 01</Eyebrow>
+            <Eyebrow>Primitives</Eyebrow>
             <H2>Primitives.</H2>
             <Lede>
               On a light section the eyebrow is accent; inside `.section-ink` it
@@ -234,7 +236,10 @@ export default function FoundationsSpecimen() {
           <div className="wrap">
             <h2 className="text-h2 text-ink">Palettes.</h2>
             <p className="text-lede mt-4 text-ink-3">
-              Static reference. Switching them at runtime is PRD 04 / 14.
+              Switch between them with the controls at the top of the page —
+              every accent below is written on{" "}
+              <code className="text-chip">&lt;html&gt;</code> at runtime, so
+              nothing re-renders.
             </p>
             <div className="mt-8 grid grid-cols-4 gap-6 lap:grid-cols-2 hand:grid-cols-1">
               {Object.entries(PALETTES).map(([name, p]) => (
