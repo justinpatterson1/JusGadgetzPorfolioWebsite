@@ -8,9 +8,14 @@ export type CtaVariant = "solid" | "accent" | "ghost";
  * Shared shape. The 8px gap owns the spacing between an icon and the label —
  * icons are sized inline (`width={14}`, 13 in Projects) and never given a
  * margin of their own (PRD 01 §1.6).
+ *
+ * The transition lists `translate`, not `transform`: Tailwind v4 emits the
+ * individual `translate` / `rotate` / `scale` properties rather than a composed
+ * `transform`, so a `transform` entry here matches nothing and the hover lift
+ * snaps instead of easing.
  */
 const BASE =
-  "cta inline-flex items-center gap-2 rounded-full px-[22px] py-[11px] text-cta transition-[transform,background-color,color,border-color] duration-[180ms] ease-hover hover:-translate-y-px";
+  "cta inline-flex items-center gap-2 rounded-full px-[22px] py-[11px] text-cta transition-[translate,background-color,color,border-color] duration-[180ms] ease-hover hover:-translate-y-px";
 
 const VARIANTS: Record<CtaVariant, string> = {
   /* Reserved — not currently used by any section. */

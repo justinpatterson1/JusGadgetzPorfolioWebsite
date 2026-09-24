@@ -1,3 +1,4 @@
+import { Sidebar } from "@/components/layout/sidebar";
 import { Chip, Chips, Cta, Eyebrow, H2, Lede, Pill } from "@/components/ui";
 import { PALETTES } from "@/lib/theme/palettes";
 
@@ -10,6 +11,13 @@ import { SpecimenControls } from "./specimen-controls";
  * by eye. The section prompts (01–08) replace it with the real composition of
  * Sidebar → Hero → About → Skills → Projects → Services → TechTicker → Footer.
  * Delete it then, along with SpecimenControls.
+ *
+ * The `about` / `skills` / `projects` / `services` / `contact` ids below are
+ * borrowed by the specimen so the rail's scrollspy and its 40px-offset scroll
+ * have real targets before those sections exist. The names don't describe what
+ * each block shows — they're stand-ins, and the real sections take them over.
+ * `scroll-mt-10` is the 40px offset for plain anchor navigation, and every real
+ * section will want it too.
  */
 
 const SURFACE_TOKENS = [
@@ -76,12 +84,7 @@ function Swatch({ token, note }: { token: string; note?: string }) {
 export default function FoundationsSpecimen() {
   return (
     <>
-      {/* Placeholder for the fixed rail (prompt 01) so the body offset reads as
-          intentional during review. */}
-      <div
-        aria-hidden
-        className="fixed inset-y-0 left-0 z-10 w-[var(--sidebar-w)] border-r border-hair bg-bg-elev"
-      />
+      <Sidebar />
 
       <main>
         <section className="section">
@@ -101,7 +104,7 @@ export default function FoundationsSpecimen() {
           </div>
         </section>
 
-        <section className="section">
+        <section id="about" className="section scroll-mt-10">
           <div className="wrap">
             <h2 className="text-h2 text-ink">Surfaces.</h2>
             <div className="mt-8 grid grid-cols-3 gap-6 lap:grid-cols-2 hand:grid-cols-1">
@@ -131,7 +134,7 @@ export default function FoundationsSpecimen() {
 
         {/* The --on-ink ramp does not invert in dark mode; this block should
             look near-identical in both themes. */}
-        <section className="section section-ink">
+        <section id="skills" className="section section-ink scroll-mt-10">
           <div className="wrap">
             {/* Inside .section-ink the eyebrow should flip accent -> coral
                 (rule included) and the lede should drop to --on-ink-2. */}
@@ -160,7 +163,7 @@ export default function FoundationsSpecimen() {
           </div>
         </section>
 
-        <section className="section">
+        <section id="projects" className="section scroll-mt-10">
           <div className="wrap">
             <h2 className="text-h2 text-ink">Type scale.</h2>
             <p className="text-lede mt-4 text-ink-3">
@@ -185,7 +188,7 @@ export default function FoundationsSpecimen() {
           </div>
         </section>
 
-        <section className="section">
+        <section id="services" className="section scroll-mt-10">
           <div className="wrap">
             <Eyebrow>Primitives</Eyebrow>
             <H2>Primitives.</H2>
@@ -232,7 +235,7 @@ export default function FoundationsSpecimen() {
           </div>
         </section>
 
-        <section className="section">
+        <section id="contact" className="section scroll-mt-10">
           <div className="wrap">
             <h2 className="text-h2 text-ink">Palettes.</h2>
             <p className="text-lede mt-4 text-ink-3">
