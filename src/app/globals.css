@@ -22,6 +22,13 @@
 @custom-variant lap (@media (max-width: 980px));
 @custom-variant hand (@media (max-width: 640px));
 
+/* Primitives retarget themselves inside a dark section (PRD 01 §1.2): the lede
+   drops to --on-ink-2 and the eyebrow flips from accent to coral. This is the
+   one place coral carries a structural role rather than a decorative one.
+   It depends on an ancestor, so it can't live on the element — hence a variant
+   rather than a utility. */
+@custom-variant ink (&:where(.section-ink, .section-ink *));
+
 /* --------------------------------------------------------------------------
    Color tokens — light theme
    -------------------------------------------------------------------------- */
@@ -148,6 +155,32 @@ html[data-theme="dark"] {
   /* easings (PRD 00 §7) */
   --ease-hover: ease;
   --ease-theme: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Ambient animation — PRD 01 §1.7
+
+   Named `pulse-dot` rather than `pulse` so it doesn't shadow Tailwind's
+   built-in animation of that name.
+
+   The pulse animates box-shadow *spread* only, never a transform or a size, so
+   the dot's layout box stays fixed and the pill's text can't shift. The shadow
+   fades to 0% accent rather than to `transparent` so the color interpolates
+   through oklab without passing through grey.
+   -------------------------------------------------------------------------- */
+
+@theme {
+  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 8px color-mix(in oklab, var(--accent) 0%, transparent);
+    }
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -408,6 +441,11 @@ html[data-theme="dark"] .photo-frame {
   }
 
   .ticker-track {
+    animation: none !important;
+  }
+
+  /* the dot keeps its resting 4px halo — only the loop stops */
+  .pill .dot {
     animation: none !important;
   }
 }
