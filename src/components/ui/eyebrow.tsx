@@ -15,14 +15,17 @@ type EyebrowProps = {
  * The rule before the text is `::before`, not a sibling element, which is what
  * keeps `gap: 10px` spacing exactly rule-to-text.
  *
- * The `eyebrow` class name is kept so the Tweaks `uppercaseEyebrows` toggle
- * (PRD 15) can find these nodes. It carries no styling of its own.
+ * Case and tracking come from `--eyebrow-case` / `--eyebrow-tracking` rather
+ * than a fixed `uppercase` utility, so the Tweaks `uppercaseEyebrows` control
+ * flips every eyebrow on the page by writing one variable on <html> — no node
+ * walking, no re-render. Defaults live in globals.css.
  */
 export function Eyebrow({ children, centered, className }: EyebrowProps) {
   return (
     <div
       className={cn(
-        "eyebrow mb-3.5 inline-flex items-center gap-2.5 text-eyebrow uppercase",
+        "eyebrow mb-3.5 inline-flex items-center gap-2.5 text-eyebrow",
+        "[text-transform:var(--eyebrow-case)]",
         "text-accent ink:text-coral",
         "before:h-px before:w-6 before:bg-accent before:content-[''] ink:before:bg-coral",
         centered && "justify-center",
