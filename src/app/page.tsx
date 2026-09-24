@@ -1,3 +1,4 @@
+import { Chip, Chips, Cta, Eyebrow, H2, Lede, Pill } from "@/components/ui";
 import { PALETTES } from "@/lib/theme/palettes";
 
 /**
@@ -130,7 +131,14 @@ export default function FoundationsSpecimen() {
             look near-identical in both themes. */}
         <section className="section section-ink">
           <div className="wrap">
-            <h2 className="text-h2 text-on-ink">On dark.</h2>
+            {/* Inside .section-ink the eyebrow should flip accent -> coral
+                (rule included) and the lede should drop to --on-ink-2. */}
+            <Eyebrow>On a dark section</Eyebrow>
+            <H2>On dark.</H2>
+            <Lede>
+              This lede and the eyebrow above it retarget themselves through the
+              ink: variant — no props, no overrides.
+            </Lede>
             <div className="mt-8 flex flex-col gap-2">
               {ON_INK_TOKENS.map((token) => (
                 <p key={token} style={{ color: `var(${token})` }}>
@@ -171,6 +179,53 @@ export default function FoundationsSpecimen() {
                   <p className={`${cls} uppercase text-ink`}>{sample}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="wrap">
+            <Eyebrow>PRD 01</Eyebrow>
+            <H2>Primitives.</H2>
+            <Lede>
+              On a light section the eyebrow is accent; inside `.section-ink` it
+              flips to coral. Hover every control below — each lifts 1px without
+              nudging its neighbors.
+            </Lede>
+
+            <div className="mt-10 flex flex-col gap-10">
+              <div>
+                <code className="text-chip text-ink-3">Pill</code>
+                <div className="mt-3">
+                  <Pill>Available for freelance work</Pill>
+                </div>
+              </div>
+
+              <div>
+                <code className="text-chip text-ink-3">
+                  Cta — accent / ghost / solid
+                </code>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <Cta variant="accent" href="#projects">
+                    View My Work
+                  </Cta>
+                  <Cta variant="ghost" href="#">
+                    Download Resume
+                  </Cta>
+                  <Cta variant="solid">Reserved base</Cta>
+                </div>
+              </div>
+
+              <div>
+                <code className="text-chip text-ink-3">Chips</code>
+                <Chips className="mt-3">
+                  {["React", "TypeScript", "Next.js", "Node", "Postgres"].map(
+                    (tech) => (
+                      <Chip key={tech}>{tech}</Chip>
+                    ),
+                  )}
+                </Chips>
+              </div>
             </div>
           </div>
         </section>
