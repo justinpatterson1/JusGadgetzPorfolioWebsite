@@ -3,8 +3,8 @@ import type { SVGProps } from "react";
 /**
  * The icon set — design-system.md §6.
  *
- * Nine of the nineteen: the glyphs the sidebar needs. The rest arrive with the
- * prompts that consume them.
+ * Ten of the nineteen: the glyphs the sidebar and hero need. The rest arrive
+ * with the prompts that consume them.
  *
  * Rules that apply to every icon here:
  * - `viewBox="0 0 24 24"`, always. Mixed viewBoxes make sizes stop agreeing.
@@ -98,6 +98,16 @@ export function ArrowIcon(p: IconProps) {
     <svg {...STROKE} strokeWidth={2} {...p}>
       <path d="M4 12h15" />
       <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+export function DownloadIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={2} {...p}>
+      <path d="M12 3.5v11" />
+      <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
+      <path d="M4.5 19.5h15" />
     </svg>
   );
 }

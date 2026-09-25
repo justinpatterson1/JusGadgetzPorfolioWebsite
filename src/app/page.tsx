@@ -1,3 +1,4 @@
+import { Hero } from "@/components/home/hero";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Chip, Chips, Cta, Eyebrow, H2, Lede, Pill } from "@/components/ui";
 import { PALETTES } from "@/lib/theme/palettes";
@@ -11,6 +12,9 @@ import { SpecimenControls } from "./specimen-controls";
  * by eye. The section prompts (01–08) replace it with the real composition of
  * Sidebar → Hero → About → Skills → Projects → Services → TechTicker → Footer.
  * Delete it then, along with SpecimenControls.
+ *
+ * `<Sidebar>` (prompt 01) and `<Hero>` (prompt 02) are the real thing and stay.
+ * Everything below the controls block is still specimen.
  *
  * The `about` / `skills` / `projects` / `services` / `contact` ids below are
  * borrowed by the specimen so the rail's scrollspy and its 40px-offset scroll
@@ -87,18 +91,22 @@ export default function FoundationsSpecimen() {
       <Sidebar />
 
       <main>
-        <section className="section">
+        <Hero />
+
+        {/* Specimen scaffolding, not part of the design. It sits directly under
+            the Hero so the palette and tweak controls are in reach while
+            checking that the illustration, orbs and orbit follow the accent. */}
+        <section className="section pt-0">
           <div className="wrap">
             <p className="text-eyebrow uppercase text-accent-strong">
-              Prompt 00 — Foundation
+              Specimen controls
             </p>
-            <h1 className="text-hero mt-4 text-ink">Tokens, type, layout.</h1>
-            <p className="text-lede mt-6 max-w-xl text-ink-2">
-              A temporary specimen page. Every value below reads a token — flip
-              the theme, palette or tweaks below and the whole page should
-              re-theme with no unstyled patches and no re-render.
+            <p className="text-lede mt-2 max-w-xl text-ink-2">
+              Temporary. Flip the theme, palette or tweaks and the whole page —
+              hero included — should re-theme with no unstyled patches and no
+              re-render.
             </p>
-            <div className="mt-8">
+            <div className="mt-6">
               <SpecimenControls />
             </div>
           </div>
