@@ -44,6 +44,22 @@
   --co-coral: oklch(0.72 0.18 35);
   --co-coral-soft: oklch(0.97 0.04 50);
 
+  /* Coral at text weight — the coral counterpart to --accent-strong, and the
+     fix for open issue #14. Derived from --co-coral rather than enumerated on
+     each palette, so it tracks whatever the palette effect writes and needs no
+     entry in `accentVars` (nor in the hand-rolled bootstrap duplicate, which
+     would be the easy half of that change to forget).
+
+     `from` keeps chroma and hue and moves lightness only. Mixing toward black
+     instead would desaturate: reaching L 0.55 that way needs ~76% coral, which
+     drags chroma 0.18 -> 0.14 and turns the glyph muddy.
+
+     Lightning CSS emits relative color syntax as-authored and cannot build an
+     @supports fallback for it, because `from var(...)` is not resolvable at
+     build time. Where it is unsupported the declaration is simply invalid and
+     the glyph inherits the card's ink — legible, just not coral. */
+  --co-coral-strong: oklch(from var(--co-coral) calc(l - 0.17) c h);
+
   --bg: #fbf9f6;
   --bg-elev: #ffffff;
   --surface-2: #f4f1ee;
@@ -103,6 +119,11 @@ html[data-theme="dark"] {
   --accent-soft: color-mix(in oklab, var(--accent) 20%, #141120);
   --co-coral-soft: color-mix(in oklab, var(--co-coral) 20%, #141120);
 
+  /* Inverts for the same reason --accent-strong becomes accentLight here: both
+     soft tokens above are *dark* tints in this theme, so the text-weight color
+     has to lighten rather than darken or it vanishes into its own well. */
+  --co-coral-strong: oklch(from var(--co-coral) calc(l + 0.1) c h);
+
   --grid-ink: rgba(255, 255, 255, 0.09);
   --shadow-lift: rgba(0, 0, 0, 0.5);
   --shadow-deep: rgba(0, 0, 0, 0.65);
@@ -133,6 +154,7 @@ html[data-theme="dark"] {
   --color-accent-glow: var(--accent-glow);
   --color-coral: var(--co-coral);
   --color-coral-soft: var(--co-coral-soft);
+  --color-coral-strong: var(--co-coral-strong);
 
   --color-bg: var(--bg);
   --color-bg-elev: var(--bg-elev);
@@ -1002,6 +1024,159 @@ html[data-theme="dark"] {
     bottom: -22px;
     background: var(--co-coral);
     border-color: var(--co-coral);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Skills — tinted section, card grid, icon wells
+   Spec: context/features/04-skills.md, anatomy in
+   context/features/design/09-skills.md, shared values in design-system.md §7.5.
+
+   Chips are not styled here. PRD 01 already ships them, and <Chips> already
+   carries the `relative` that lifts the row above the card's ::before wash.
+   -------------------------------------------------------------------------- */
+
+/* This selector is doubled (`.section.skills-section`) and the block is
+   deliberately UNLAYERED, unlike every other block in this file. Both are
+   needed, for two separate reasons, to beat one rule.
+
+   PRD 00 put `.section { padding-block: 110px }` in @layer components but its
+   640px override, `.section { padding-block: 80px }`, at the top level.
+
+   1. Unlayered, because an unlayered rule beats a layered one whatever the
+      specificity. A layered `.skills-section` — or a `pt-[60px]` utility,
+      which is layered too — loses to that override outright.
+   2. Doubled, because unlayered alone only ties: both selectors would be one
+      class, and the 640px rule comes *later* in the file, so it would still
+      win. Matching `.section` as well makes this the more specific rule and
+      takes source order out of it.
+
+   Without both, the top padding jumps 60px -> 80px below 640px — backwards,
+   since it would put Skills *further* from About on a phone than on a desktop,
+   which is the exact gap this override exists to close.
+
+   The underlying inconsistency in PRD 00's layering is recorded as open issue
+   #28 rather than fixed here: re-layering `.section` and `.wrap` changes the
+   cascade for every section and wants a visual pass this change hasn't had. */
+.section.skills-section {
+  /* About and Skills are both light with no divider between them; the full
+     110 + 110 = 220px stack read as a hole. Halving Skills' top padding is
+     what makes the two sections feel like one thought. */
+  padding-top: 60px;
+
+  /* The site's only tinted light section: transparent at the top, 4% accent at
+     the bottom. It warms the page as it approaches the dark Services section
+     so that transition isn't a hard cut. Built on --bg, which inverts with the
+     theme, so this needs no dark-mode override — unlike .service and
+     .photo-frame, which both do. */
+  background: linear-gradient(
+    180deg,
+    var(--bg),
+    color-mix(in oklab, var(--accent) 4%, var(--bg))
+  );
+}
+
+@layer components {
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    /* The standard header-block-to-content gap, shared with Projects and
+       Services. */
+    margin-top: 56px;
+  }
+
+  .skill-card {
+    position: relative;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 18px;
+    padding: 28px;
+    /* `transform` is named rather than inherited from a shorthand: Tailwind v4
+       emits translate/rotate/scale as individual properties, and the hover
+       below uses a real `transform`, so this is the property that animates. */
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+    /* Load-bearing: clips the ::before wash to the 18px radius. */
+    overflow: hidden;
+  }
+
+  /* A corner wash, not a full overlay — accent-soft at the top-left fading out
+     by 40%. `pointer-events: none` keeps it from swallowing chip hovers. */
+  .skill-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      var(--accent-soft),
+      transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  /* Four parts at once — lift, shadow, warmed border, wash. Each is small;
+     together they read as the card coming forward. The shadow's large negative
+     spread makes it ambient rather than a hard drop. */
+  .skill-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -22px var(--shadow-lift);
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--hair));
+  }
+
+  .skill-card:hover::before {
+    opacity: 1;
+  }
+
+  /* `relative` on the head and on .chips (in the Chips primitive) is what keeps
+     both above the absolutely-positioned ::before wash. */
+  .skill-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .skill-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    border: 1px solid color-mix(in oklab, var(--accent) 20%, transparent);
+  }
+
+  /* Coral wells read from --co-coral-strong, which is derived from the palette
+     (see its definition at the top of this file). PRD 09 hardcoded a fixed
+     orange here; that was open issue #14, and it was wrong on two of the four
+     palettes — Sunset's coral is violet and Forest's sits against a green
+     accent. */
+  .skill-icon-alt {
+    background: var(--co-coral-soft);
+    color: var(--co-coral-strong);
+    border-color: color-mix(in oklab, var(--co-coral) 22%, transparent);
+  }
+}
+
+/* Layered, unlike the section rule above: this only has to beat `.skills-grid`
+   in the same layer, which later source order already does. Nothing here
+   touches `.section`, so the trap described above doesn't apply. */
+@layer components {
+  @media (max-width: 980px) {
+    /* The gap grows when the cards stack: side-by-side cards need less
+       separation than ones sitting directly above each other. */
+    .skills-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
   }
 }
 
