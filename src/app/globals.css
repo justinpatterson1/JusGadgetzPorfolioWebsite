@@ -912,6 +912,100 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   About — photo frame and its decorations
+   Spec: context/features/03-about.md, anatomy in
+   context/features/design/08-about.md, shared values in design-system.md §7.4.
+
+   Only the photo slot lives here. The section's grid, copy and fact tiles are
+   ordinary utilities on the elements.
+
+   `.photo-frame` in particular must stay a class: the dark-mode override at
+   the bottom of this file has keyed on it since PRD 00.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* `isolation: isolate` is not decoration — it scopes the decorations'
+     `z-index: -1` to this element.
+
+     Without it they land in the *root* stacking context, where a negative
+     z-index paints behind every ancestor's background. That happens to look
+     right today only because .section, .wrap, main and body are all
+     background-free (body's background propagates to the canvas, which always
+     paints behind). Give any of them a background later — a tinted About
+     section, say, exactly as Skills already does — and both squares silently
+     vanish. Isolating here means they can only ever sink behind .photo-wrap
+     itself, which has no background by design. */
+  .photo-wrap {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* 4:5 portrait, matching the hero card's ratio at a smaller radius (§5 puts
+     the hero card at 28px and this at 24px — the hero is the larger, more
+     prominent object and should read that way).
+
+     The empty state is a 45° hatch: a 2px accent stripe every 14px over an
+     --accent-soft field. It reads as "slot awaiting content" without needing a
+     literal placeholder graphic. */
+  .photo-frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--hair);
+    background:
+      repeating-linear-gradient(
+        45deg,
+        color-mix(in oklab, var(--accent) 10%, transparent) 0 2px,
+        transparent 2px 14px
+      ),
+      var(--accent-soft);
+  }
+
+  /* Pre-written so dropping in a real photo needs no CSS change at all:
+     `cover` crops to fill rather than letterboxing, and the absolute inset
+     guarantees the image covers the hatch underneath. */
+  .photo-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Two 88px squares offset 22px past opposite corners. One is a hollow accent
+     outline, the other a solid coral fill — the contrast between hollow and
+     solid is what stops them reading as a repeated motif rather than as two
+     deliberate marks.
+
+     `z-index: -1` is load-bearing: it drops them behind the frame inside
+     .photo-wrap's stacking context, so only the outer quarter of each square
+     shows. Without it they cover the photo's corners. The `isolation` above is
+     what keeps that negative index scoped to .photo-wrap — see the note
+     there. */
+  .photo-deco {
+    position: absolute;
+    z-index: -1;
+    width: 88px;
+    height: 88px;
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+  }
+
+  .photo-deco-1 {
+    top: -22px;
+    left: -22px;
+  }
+
+  .photo-deco-2 {
+    right: -22px;
+    bottom: -22px;
+    background: var(--co-coral);
+    border-color: var(--co-coral);
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
