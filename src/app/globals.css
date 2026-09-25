@@ -1181,6 +1181,176 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   Projects — split header, card grid, generated thumbnails
+   Spec: context/features/05-projects.md, anatomy in
+   context/features/design/10-projects.md, shared values in design-system.md
+   §5, §7.6, §8.
+
+   No `.section` padding override here, so this block can live entirely in
+   @layer components — the §7.5.1 trap only bites rules competing with
+   `.section` itself.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* `align-items: flex-end` is what puts the CTA's baseline near the lede's
+     last line rather than centring it against the whole headline block. */
+  .projects-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 32px;
+    margin-bottom: 56px;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+
+  .project {
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    /* Load-bearing twice over: it clips the thumbnail to the 20px radius (the
+       thumb has no radius of its own) and it contains the thumbnail's hover
+       scale so the card's own corners stay square-free. */
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  /* 4px and the deeper shadow, one step above Skills' 3px: §8's lift table
+     makes Projects the most tactile section on the page.
+
+     No `cursor: pointer` — see the note in projects.tsx. The card is not a
+     link, so it does not claim to be one. */
+  .project:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -30px var(--shadow-deep);
+  }
+
+  .project-thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    /* Palette-aware fallback for any card without one of the three fixed
+       gradients below. */
+    background: linear-gradient(
+      135deg,
+      var(--accent-soft),
+      color-mix(in oklab, var(--accent) 22%, var(--bg-elev))
+    );
+    transition: scale 0.3s ease;
+  }
+
+  /* The prompt asks for a slight thumbnail scale on hover; PRD 10 and §8 are
+     silent on it, and nothing contradicts it. `scale` is named as its own
+     property rather than folded into `transform`, because that is what
+     Tailwind v4 emits and what this transition can actually animate. */
+  .project:hover .project-thumb {
+    scale: 1.04;
+  }
+
+  /* Three fixed gradients, **deliberately independent of the accent palette.**
+     Projects should read as three distinct products, not three tints of one
+     brand color, so these are the one set of colors on the page that does not
+     follow the palette. Hues: blue 250->230, warm 30->25, deep violet 285->280
+     (the only dark one). */
+  .project-thumb-1 {
+    background: linear-gradient(135deg, oklch(0.92 0.06 250), oklch(0.78 0.12 230));
+  }
+
+  .project-thumb-2 {
+    background: linear-gradient(135deg, oklch(0.94 0.05 30), oklch(0.78 0.14 25));
+  }
+
+  .project-thumb-3 {
+    background: linear-gradient(135deg, oklch(0.32 0.18 285), oklch(0.18 0.16 280));
+  }
+
+  .project-deco {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.35;
+  }
+
+  .project-glyph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    /* Literal white over a gradient that is dark in both themes — the §2.4 SVG
+       and glyph exception. --on-ink would track the theme and must not here. */
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 96px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .project-body {
+    padding: 24px;
+  }
+
+  /* The title sat in a flex row with the action icons in PRD 10. With those
+     removed it is the only thing on its line, so the row is gone and the
+     margin moves here. */
+  .project-title {
+    margin-bottom: 8px;
+  }
+
+  .project-desc {
+    margin-bottom: 18px;
+  }
+
+  /* A <ul> for the tags, so assistive tech announces the count. */
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+  }
+
+  /* Intentionally unlike `.chip`: 6px radius rather than a pill, accent-tinted
+     rather than neutral, and no hover — there is nothing to hover toward.
+     Skills' chips are a browsable inventory; these are metadata, and the visual
+     difference is what tells you which is which (PRD 10). */
+  .project-tag {
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in oklab, var(--accent) 14%, transparent);
+  }
+
+  @media (max-width: 980px) {
+    /* Two columns leaves the third card alone in the left column. Accepted
+       (PRD 10): the cards are tall and the gap is small, so it reads as a row
+       that ran out rather than as a hole. */
+    .projects-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* The split header stacks, CTA below the copy and left-aligned. */
+    .projects-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
