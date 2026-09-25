@@ -3,8 +3,8 @@ import type { SVGProps } from "react";
 /**
  * The icon set — design-system.md §6.
  *
- * Thirteen of the nineteen: the glyphs the sidebar, hero and skills need. The
- * rest arrive with the prompts that consume them.
+ * Fourteen of the nineteen: the glyphs the sidebar, hero, skills and projects
+ * need. The rest arrive with the prompts that consume them.
  *
  * Rules that apply to every icon here:
  * - `viewBox="0 0 24 24"`, always. Mixed viewBoxes make sizes stop agreeing.
@@ -151,6 +151,19 @@ export function MailIcon(p: IconProps) {
     <svg {...STROKE} strokeWidth={2} {...p}>
       <rect x="3" y="5" width="18" height="14" rx="2.2" />
       <path d="m3.6 6.8 8.4 6.2 8.4-6.2" />
+    </svg>
+  );
+}
+
+/* Used at 13px in the Projects header CTA. The arrow and the corner bracket are
+   separate paths so neither joins the other at a shared point — at 13px a
+   single path reads as a smudge. */
+export function ExternalIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={2} {...p}>
+      <path d="M14 4h6v6" />
+      <path d="M20 4 11 13" />
+      <path d="M18 14.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4.5" />
     </svg>
   );
 }
