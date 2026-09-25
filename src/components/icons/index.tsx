@@ -3,8 +3,8 @@ import type { SVGProps } from "react";
 /**
  * The icon set — design-system.md §6.
  *
- * Ten of the nineteen: the glyphs the sidebar and hero need. The rest arrive
- * with the prompts that consume them.
+ * Thirteen of the nineteen: the glyphs the sidebar, hero and skills need. The
+ * rest arrive with the prompts that consume them.
  *
  * Rules that apply to every icon here:
  * - `viewBox="0 0 24 24"`, always. Mixed viewBoxes make sizes stop agreeing.
@@ -68,6 +68,40 @@ export function CodeIcon(p: IconProps) {
       <path d="M9.5 8 5 12l4.5 4" />
       <path d="M14.5 8 19 12l-4.5 4" />
       <path d="M13.2 5.6 10.8 18.4" />
+    </svg>
+  );
+}
+
+/* `CodeIcon` is the chevrons-and-slash glyph; this is the shell window. They
+   are easy to confuse — Skills uses this one for Backend Development. */
+export function TerminalIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <rect x="2.5" y="4" width="19" height="16" rx="2.4" />
+      <path d="M6.8 9.6 9.8 12l-3 2.4" />
+      <path d="M12.6 15h4.6" />
+    </svg>
+  );
+}
+
+export function PhoneIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <rect x="6.5" y="2.5" width="11" height="19" rx="2.6" />
+      <path d="M10.6 5.6h2.8" />
+      <path d="M10.4 18.4h3.2" />
+    </svg>
+  );
+}
+
+export function GlobeIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <circle cx="12" cy="12" r="9.2" />
+      <path d="M2.8 12h18.4" />
+      {/* The two meridians are ellipses rather than arcs so the sphere still
+          reads at 20px, where a single curved path flattens into the rim. */}
+      <ellipse cx="12" cy="12" rx="4.1" ry="9.2" />
     </svg>
   );
 }
