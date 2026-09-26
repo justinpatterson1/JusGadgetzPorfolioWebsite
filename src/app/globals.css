@@ -222,7 +222,11 @@ html[data-theme="dark"] {
    -------------------------------------------------------------------------- */
 
 @theme {
-  --text-hero: clamp(48px, 6.4vw, 84px);
+  /* The floor is min(48px, 11vw), not a flat 48px: at 48px "experiences" is
+     284px wide, wider than the hero column on any phone under ~392px — 17px
+     into the gutter at 375, cut off past the screen edge at 320. 11vw only
+     undercuts 48px below 436px, so nothing changes at tablet or desktop. */
+  --text-hero: clamp(min(48px, 11vw), 6.4vw, 84px);
   --text-hero--line-height: 1.02;
   --text-hero--letter-spacing: -0.035em;
   --text-hero--font-weight: var(--headline-weight);

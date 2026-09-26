@@ -17,7 +17,15 @@ export const DEFAULT_THEME: ThemeMode = "light";
  *
  * `--accent-glow` is not written here — globals.css derives it from
  * `--accent-light` so the alpha stays in one place.
+ *
+ * **The two soft tints are light-mode only.** In dark mode globals.css derives
+ * them from `--accent` / `--co-coral` (a 20% mix into the dark surface), and
+ * an inline value would beat that selector — the same trap as `--bg`. Writing
+ * the palette's near-white tints unconditionally made every dark-mode icon
+ * well, project tag and Hero pill render pale, on all four palettes.
  */
+export const LIGHT_ONLY_VARS = ["--accent-soft", "--co-coral-soft"] as const;
+
 export function accentVars(
   palette: PaletteName,
   mode: ThemeMode,
@@ -27,18 +35,22 @@ export function accentVars(
     "--accent": p.accent,
     "--accent-strong": mode === "dark" ? p.accentLight : p.accentStrong,
     "--accent-light": p.accentLight,
-    "--accent-soft": p.accentSoft,
     "--co-coral": p.coral,
-    "--co-coral-soft": p.coralSoft,
+    ...(mode === "light" && {
+      "--accent-soft": p.accentSoft,
+      "--co-coral-soft": p.coralSoft,
+    }),
   };
 }
 
 /**
  * Apply theme, palette and tweaks to <html>. Client only.
  *
- * Keep the `--bg` removal in place: `tweakVars` writes an inline light-mode
- * background, and an inline style beats the `html[data-theme="dark"]` selector,
- * so dark mode has to clear it rather than override it.
+ * Keep the removals in place: `tweakVars` writes an inline light-mode
+ * background and `accentVars` writes the light-mode soft tints, and an inline
+ * style beats the `html[data-theme="dark"]` selector, so dark mode has to
+ * clear them rather than override them — including after a live light → dark
+ * toggle, when the light values are already sitting on <html>.
  */
 export function applyTheme(
   mode: ThemeMode,
@@ -56,6 +68,7 @@ export function applyTheme(
 
   if (mode === "dark") {
     root.style.removeProperty("--bg");
+    for (const name of LIGHT_ONLY_VARS) root.style.removeProperty(name);
   }
 }
 

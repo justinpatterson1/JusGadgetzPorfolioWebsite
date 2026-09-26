@@ -26,8 +26,14 @@ export function Eyebrow({ children, centered, className }: EyebrowProps) {
       className={cn(
         "eyebrow mb-3.5 inline-flex items-center gap-2.5 text-eyebrow",
         "[text-transform:var(--eyebrow-case)]",
-        "text-accent ink:text-coral",
-        "before:h-px before:w-6 before:bg-accent before:content-[''] ink:before:bg-coral",
+        /* Dark mode reads --accent-light, the palette's own "dark-mode text
+           weight" (palettes.ts): plain accent is 3.4–3.8:1 on the dark
+           surfaces on three palettes, too little for 11px text. The ink:
+           coral retarget must still win inside Services, so it is restated
+           under dark: to outrank it on variant count. */
+        "text-accent dark:text-accent-light ink:text-coral dark:ink:text-coral",
+        "before:h-px before:w-6 before:bg-accent before:content-[''] dark:before:bg-accent-light",
+        "ink:before:bg-coral dark:ink:before:bg-coral",
         centered && "justify-center",
         className,
       )}
