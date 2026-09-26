@@ -1351,16 +1351,197 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   Services — dark band, centered header, six cards, one featured
+   Spec: context/features/06-services.md, anatomy in
+   context/features/design/11-services.md, shared values in design-system.md
+   §5, §7.7, §8.
+
+   `.section-ink` and the eyebrow/lede retargets shipped in PRD 00/01 and are
+   not redeclared. No `.section` padding override, so the whole block lives in
+   @layer components (§7.5.1 does not apply).
+
+   The card surface is a variable, `--service-surface`, rather than a plain
+   background. Dark mode needs a lighter surface (see the dark-mode overrides
+   below), and the hover tint and the featured gradient are both computed
+   *from* the surface — so swapping the variable re-bases all three at once.
+   PRD 11 instead overrode `background` in dark mode, which wiped the featured
+   gradient and the hover tint along with it: its "the featured card is
+   unaffected" was wrong.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* 20px — the tightest grid gap on the site. Six cards read as one block. */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+
+  .service {
+    --service-surface: var(--bg-ink-soft);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--service-surface);
+    border: 1px solid var(--hair-dark);
+    border-radius: 18px;
+    padding: 28px;
+    /* Named, not `all`: only these three change on hover, and a gradient
+       background (the featured card) cannot interpolate anyway. */
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      background-color 0.25s ease;
+    /* Load-bearing: clips the ::before bar to the 18px radius. */
+    overflow: hidden;
+  }
+
+  /* The left-edge bar. Scaled, not sized, so the wipe stays on the compositor;
+     `transform-origin: top` is what makes it run top to bottom. */
+  .service::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 3px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+
+  /* `:has(:focus-visible)` gives a keyboard user the same state a pointer
+     gets — otherwise tabbing onto a card would land on an invisible link. No
+     shadow: shadows do not read on a dark surface. */
+  .service:is(:hover, :has(.service-link:focus-visible)) {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--hair-dark));
+  }
+
+  .service:is(:hover, :has(.service-link:focus-visible))::before {
+    transform: scaleY(1);
+  }
+
+  /* `:not(.featured)` keeps the tint off the featured card by selector rather
+     than by source order — its gradient must survive hover. */
+  .service:not(.featured):is(:hover, :has(.service-link:focus-visible)) {
+    background-color: color-mix(
+      in oklab,
+      var(--accent) 8%,
+      var(--service-surface)
+    );
+  }
+
+  /* 6% white, not a token: on a dark surface a low-alpha white is the neutral
+     well, where a token color would either vanish or overpower. */
+  .service-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--on-ink);
+    border: 1px solid var(--hair-dark);
+    margin-bottom: 22px;
+  }
+
+  .service-title {
+    margin-bottom: 8px;
+  }
+
+  /* Grows to fill the card, which pushes the link to the bottom so links line
+     up across a row whose descriptions differ in length. Growing the text
+     rather than giving the link `margin-top: auto` keeps the link's hit area
+     and focus ring the size of the link. */
+  .service-desc {
+    flex-grow: 1;
+  }
+
+  /* Hidden at rest, fades in and slides 4px on hover. `opacity`, never
+     `display`: the link keeps its layout space so no card changes height on
+     hover — six cards jumping would be unusable. `align-self` stops the flex
+     column stretching the hit area to the full card width. */
+  .service-link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    margin-top: 18px;
+    color: var(--co-coral);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .service:is(:hover, :has(.service-link:focus-visible)) .service-link {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Touch screens never hover, so a hover-only link would be an invisible tap
+     target on every phone. Show it at rest there. */
+  @media (hover: none) {
+    .service-link {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Three promotions: a 140° accent gradient, a solid accent well, and a link
+     that is always visible and white. Literal white here is one of the §2
+     exceptions. */
+  .service.featured {
+    background: linear-gradient(
+      140deg,
+      color-mix(in oklab, var(--accent) 40%, var(--service-surface)),
+      var(--service-surface)
+    );
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--hair-dark));
+  }
+
+  .service.featured .service-icon {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .service.featured .service-link {
+    color: white;
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (max-width: 980px) {
+    .services-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
-   mode, so the cards lose separation; --surface-2 restores it. .photo-frame
+   mode, so the cards lose separation; --surface-2 restores it. It is set as
+   the --service-surface variable, not as `background`: this rule is unlayered,
+   so a `background` here would beat every layered .service rule outright and
+   erase the featured gradient and the hover tint. .photo-frame
    uses --accent-soft in light mode, which reads as near-white; in dark mode it
    needs a stronger stripe and a real surface.
    -------------------------------------------------------------------------- */
 
 html[data-theme="dark"] .service {
-  background: var(--surface-2);
+  --service-surface: var(--surface-2);
 }
 
 html[data-theme="dark"] .ticker-section {
