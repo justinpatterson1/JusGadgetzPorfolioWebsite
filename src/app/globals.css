@@ -1529,6 +1529,102 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   Tech ticker — one line of motion between Services and the footer
+   Spec: context/features/07-tech-ticker.md, anatomy in
+   context/features/design/12-tech-ticker.md, shared values in design-system.md
+   §7.8, §8.
+
+   Not a `.section`, so it has nothing to compete with and the whole block
+   lives in @layer components (§7.5.1 does not apply).
+
+   **The loop math, and why it is not PRD 12's.** A seamless marquee needs the
+   track to be exactly two periods wide, where one period is one copy of the
+   list plus the space that follows it. PRD 12 spaced items with `gap` on the
+   track, which makes the track 34 names + 33 gaps — one gap short of two
+   periods — so −50% landed 28px short and the strip jumped 28px every loop.
+   (Its inert `gap` on `.ticker` was meant to cover this; a gap does nothing
+   with one child.) Here every name carries its own trailing margin, so each
+   copy is 17 × (name + 56px) and the track is exactly two of them, whatever
+   the names measure.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* 80px, lighter than the 110px section standard: one line tall, it should
+     read as a divider band. --bg-elev plus the two hairlines is what separates
+     it from --bg on either side, in both themes. */
+  .ticker-section {
+    padding-block: 80px;
+    border-block: 1px solid var(--hair);
+    background: var(--bg-elev);
+  }
+
+  /* The eyebrow primitive brings a 14px bottom margin; this makes up the 28px
+     §7.8 puts between the label and the strip. */
+  .ticker {
+    margin-top: 14px;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  /* `width: max-content` rather than PRD 12's `flex-shrink: 0`: either keeps
+     the track from being squeezed to the container, but this says so without
+     depending on the parent being a flex container. `linear` is required —
+     any easing visibly speeds up and slows down within each loop. */
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker-scroll 40s linear infinite;
+  }
+
+  /* `animation-play-state` holds the current position, so leaving resumes
+     from where it stopped. On touch screens a tap sets :hover, which gives
+     phones the same pause. */
+  .ticker:hover .ticker-track {
+    animation-play-state: paused;
+  }
+
+  .ticker-list {
+    display: flex;
+  }
+
+  /* --ink-3, not PRD 12's --ink-4 (decided 2026-09-25). PRD 12 accepted
+     --ink-4's ~2.4:1 because every name "also appears as a Skills chip" — but
+     Stripe, Redis, MongoDB, Prisma and Firebase do not, which is the case it
+     says to darken for. --ink-3 is 5.2:1 light / 5.6:1 dark on --bg-elev.
+     `nowrap` is load-bearing: a wrapped name changes the period width and
+     breaks the loop. */
+  .tech-item {
+    margin-inline-end: 56px;
+    color: var(--ink-3);
+    white-space: nowrap;
+    cursor: default;
+    transition: color 0.2s ease;
+  }
+
+  .tech-item:hover {
+    color: var(--accent);
+  }
+}
+
+/* Namespaced — PRD 12's `scroll` is too generic for a global keyframe (the
+   §4 naming rule). Stopped by the reduced-motion guard below, which has named
+   .ticker-track since PRD 00. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
@@ -1542,10 +1638,6 @@ html[data-theme="dark"] {
 
 html[data-theme="dark"] .service {
   --service-surface: var(--surface-2);
-}
-
-html[data-theme="dark"] .ticker-section {
-  background: var(--bg-elev);
 }
 
 html[data-theme="dark"] .photo-frame {
