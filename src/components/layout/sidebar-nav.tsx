@@ -38,16 +38,25 @@ function useScrollSpy(): string | null {
         return;
       }
 
+      /* A last section shorter than the viewport can never bring its top up to
+         the 140px line — the page runs out of scroll first. The footer is
+         528px on desktop, so at 1440×900 its top stops at 371px and Contact
+         would never highlight, even after clicking Contact. Once the page is
+         scrolled to the end, the last section present wins. The 2px slack
+         absorbs fractional scroll positions at non-integer zoom. */
+      const atBottom =
+        y + window.innerHeight >= document.documentElement.scrollHeight - 2;
+
       let current: string | null = null;
       for (const item of NAV_ITEMS) {
         if (item.id === null) continue;
         const el = document.getElementById(item.id);
-        /* section not built yet (prompts 02–08) — skip, don't guess */
+        /* section not present — skip, don't guess */
         if (el === null) continue;
         /* §6.3 phrases this in document coordinates — "the section whose top
            has passed scrollY + 140" — which reduces to a viewport-relative
            comparison, since documentTop <= scrollY + 140 ⟺ rect.top <= 140. */
-        if (el.getBoundingClientRect().top <= SPY_OFFSET) {
+        if (atBottom || el.getBoundingClientRect().top <= SPY_OFFSET) {
           current = item.id;
         }
       }

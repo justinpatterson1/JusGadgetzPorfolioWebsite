@@ -1625,6 +1625,147 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   Footer / Contact — the closing dark band
+   Spec: context/features/08-footer-contact.md, anatomy in
+   context/features/design/13-footer.md, shared values in design-system.md
+   §2.4, §5, §7.9, §8.
+
+   A <footer>, not a `.section`, so nothing competes with its padding and the
+   whole block lives in @layer components (§7.5.1 does not apply).
+
+   **Two deliberate departures from PRD 13, both contrast.** Accent text on
+   --bg-ink measures 3.5–3.7:1 on three of the four palettes (Sunset 4.8) —
+   fine for the 40–64px headline, which needs 3:1, but not for the 15px link
+   rows on hover, which need 4.5:1. The rows turn --accent-light instead
+   (8.9:1 or better on all four). And the bottom bar is --on-ink-2 rather than
+   --on-ink-3 (3.6:1 at 13px), decided 2026-09-25, as the ticker was.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  /* 110 / 36 — standard section rhythm on top, tight to the page edge below. */
+  .footer {
+    background: var(--bg-ink);
+    color: var(--on-ink);
+    padding-block: 110px 36px;
+  }
+
+  /* 1.4 / 1 — the widest split on the site: the headline is the point, the
+     links are a directory. `align-items: start` lines the links up with the
+     top of the headline, not its middle. */
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .footer-title {
+    margin-bottom: 18px;
+  }
+
+  /* 16px / 480px — a quieter register than `.lede`'s 17px / 600px. */
+  .footer-lede {
+    max-width: 480px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--on-ink-2);
+  }
+
+  /* The page's primary conversion target, so the strongest hover on the page:
+     a 4% white ghost pill (the §2.4 exception) that fills solid accent. The
+     text stays --on-ink on the fill — see open-issues.md #30 for Sunset. */
+  .footer-mail {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding: 14px 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--hair-dark);
+    border-radius: 999px;
+    color: var(--on-ink);
+    font-size: 15px;
+    font-weight: 500;
+    /* Named, not PRD 13's `all`. */
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .footer-mail:is(:hover, :focus-visible) {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* The only focus ring on a dark surface. --accent-light rather than the
+     browser default so it holds up on every palette. */
+  .footer-mail:focus-visible,
+  .footer-link:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 3px;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* The row indents with `padding-left`, deliberately not `transform`:
+     translating the row would carry the right-hand icon with it, and the
+     icons are meant to hold a fixed column. Four rows is far too few for the
+     layout cost to matter. */
+  .footer-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--hair-dark);
+    font-size: 15px;
+    transition:
+      padding-left 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .footer-link:is(:hover, :focus-visible) {
+    padding-left: 8px;
+    color: var(--accent-light);
+  }
+
+  .footer-link svg {
+    opacity: 0.7;
+  }
+
+  /* `flex-wrap` + `gap` rather than PRD 13's column at ≤640px — this closes
+     open-issues.md #15 at every width, not just below one breakpoint, and the
+     two lines sit side by side for as long as they fit. */
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px 24px;
+    margin-top: 96px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hair-dark);
+    color: var(--on-ink-2);
+    font-size: 13px;
+  }
+
+  /* The last coral on the page. */
+  .footer-heart {
+    color: var(--co-coral);
+  }
+
+  @media (max-width: 980px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
