@@ -1,11 +1,12 @@
 import { ExternalIcon } from "@/components/icons";
 import { Cta, Eyebrow, H2, Lede } from "@/components/ui";
+import { GITHUB_URL } from "@/lib/content/contact";
 import { PROJECTS, type Project } from "@/lib/content/projects";
 
 import { ProjectThumb } from "./project-thumb";
 
 /** Where "View all projects" goes — open issue #9, decided 2026-09-25. */
-const ALL_PROJECTS_URL = "https://github.com/justinpatterson1";
+const ALL_PROJECTS_URL = GITHUB_URL;
 
 /**
  * Section 04 — Projects. Spec: context/features/05-projects.md, with the

@@ -26,9 +26,10 @@ export type NavItem = {
  * top to bottom and takes the last section whose top has passed the offset, so
  * a list out of order highlights the wrong icon.
  *
- * Every id except Home's belongs to a section from prompts 02–08 that does not
- * exist yet. Missing targets are handled rather than assumed away: the
- * scrollspy skips ids it can't find and a click on a dead link does nothing.
+ * Every id now has a section (`contact` is the footer). Missing targets are
+ * still handled rather than assumed away: the scrollspy skips ids it can't
+ * find, and at the end of the page the last one present wins — see
+ * `useScrollSpy`.
  */
 export const NAV_ITEMS: readonly NavItem[] = [
   { id: null, label: "Home", icon: HomeIcon },
