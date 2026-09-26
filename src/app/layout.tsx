@@ -64,9 +64,13 @@ const themeBootstrap = `
     root.style.setProperty('--accent', p.accent);
     root.style.setProperty('--accent-strong', dark ? p.accentLight : p.accentStrong);
     root.style.setProperty('--accent-light', p.accentLight);
-    root.style.setProperty('--accent-soft', p.accentSoft);
     root.style.setProperty('--co-coral', p.coral);
-    root.style.setProperty('--co-coral-soft', p.coralSoft);
+    /* light mode only — dark mode derives both tints in globals.css, and an
+       inline value would beat that selector (see LIGHT_ONLY_VARS) */
+    if (!dark) {
+      root.style.setProperty('--accent-soft', p.accentSoft);
+      root.style.setProperty('--co-coral-soft', p.coralSoft);
+    }
 
     var t = ${JSON.stringify(DEFAULT_TWEAKS)};
     try {
