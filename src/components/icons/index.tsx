@@ -3,8 +3,8 @@ import type { SVGProps } from "react";
 /**
  * The icon set — design-system.md §6.
  *
- * Fourteen of the nineteen: the glyphs the sidebar, hero, skills and projects
- * need. The rest arrive with the prompts that consume them.
+ * All seventeen stroke glyphs. The three filled brand glyphs (LinkedIn, X,
+ * GitHub) arrive with the footer, which is their only consumer.
  *
  * Rules that apply to every icon here:
  * - `viewBox="0 0 24 24"`, always. Mixed viewBoxes make sizes stop agreeing.
@@ -102,6 +102,38 @@ export function GlobeIcon(p: IconProps) {
       {/* The two meridians are ellipses rather than arcs so the sphere still
           reads at 20px, where a single curved path flattens into the rim. */}
       <ellipse cx="12" cy="12" rx="4.1" ry="9.2" />
+    </svg>
+  );
+}
+
+export function CardIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <rect x="2.5" y="5" width="19" height="14" rx="2.4" />
+      <path d="M2.5 9.5h19" />
+      <path d="M6.5 15h3.5" />
+    </svg>
+  );
+}
+
+/* Two stacked units rather than three: at 20px a third band closes the gaps
+   and the glyph reads as a filled block. */
+export function ServerIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <rect x="3" y="3.5" width="18" height="7.5" rx="2" />
+      <rect x="3" y="13" width="18" height="7.5" rx="2" />
+      <path d="M7 7.25h.01M7 16.75h.01" />
+    </svg>
+  );
+}
+
+/* The check is what makes this "Security Audits" rather than a generic badge. */
+export function ShieldIcon(p: IconProps) {
+  return (
+    <svg {...STROKE} strokeWidth={1.8} {...p}>
+      <path d="M12 2.8 4.5 5.6v5.9c0 4.6 3.1 8.2 7.5 9.7 4.4-1.5 7.5-5.1 7.5-9.7V5.6Z" />
+      <path d="m8.8 12.1 2.3 2.3 4.2-4.4" />
     </svg>
   );
 }
