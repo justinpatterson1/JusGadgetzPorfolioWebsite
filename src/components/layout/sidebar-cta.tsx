@@ -1,9 +1,7 @@
 "use client";
 
-import type { MouseEvent } from "react";
-
 import { ArrowIcon } from "@/components/icons";
-import { scrollToSection } from "@/lib/scroll";
+import { useSectionLink } from "@/lib/use-section-link";
 
 import { SidebarTooltip } from "./sidebar-tooltip";
 
@@ -18,17 +16,13 @@ import { SidebarTooltip } from "./sidebar-tooltip";
  * `--bg` would invert it to near-black in dark mode.
  */
 export function SidebarCta() {
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    scrollToSection("contact");
-  };
+  /* `local`: every page renders the footer, so #contact is always in-page. */
+  const link = useSectionLink("contact", { local: true });
 
   return (
     <a
-      href="#contact"
+      {...link}
       aria-label="Let's Talk"
-      onClick={handleClick}
       className="group relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-[background-color,translate] duration-200 ease-hover hover:-translate-y-0.5 hover:bg-accent-strong hand:size-10.5"
     >
       <ArrowIcon width={18} height={18} />

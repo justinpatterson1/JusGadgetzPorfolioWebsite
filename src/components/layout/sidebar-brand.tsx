@@ -1,8 +1,6 @@
 "use client";
 
-import type { MouseEvent } from "react";
-
-import { scrollToSection } from "@/lib/scroll";
+import { useSectionLink } from "@/lib/use-section-link";
 
 /**
  * The "J" wordmark tile — design-system.md §7.2.
@@ -16,17 +14,13 @@ import { scrollToSection } from "@/lib/scroll";
  * mode.
  */
 export function SidebarBrand() {
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    scrollToSection(null);
-  };
+  /* Back to the top on the homepage; back to the homepage everywhere else. */
+  const link = useSectionLink(null);
 
   return (
     <a
-      href="#"
-      aria-label="JusDev — back to top"
-      onClick={handleClick}
+      {...link}
+      aria-label={link.href === "/" ? "Home" : "Back to top"}
       className="group relative mb-9 flex size-11 shrink-0 items-center justify-center rounded-xl bg-ink text-bg transition-colors duration-200 ease-hover hover:bg-accent hand:size-10"
     >
       <span aria-hidden className="text-title font-bold">

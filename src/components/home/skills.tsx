@@ -2,8 +2,8 @@ import { Chip, Chips, Eyebrow, H2, Lede } from "@/components/ui";
 import { SKILLS, type SkillCategory } from "@/lib/content/skills";
 
 /**
- * Section 03 — Skills. Spec: context/features/04-skills.md, with the anatomy in
- * context/features/design/09-skills.md.
+ * Section 05 — Technical Expertise. Spec: context/features/15_TECHNICAL_EXPERTISE.md,
+ * layered on the build from 04-skills.md and design/09-skills.md.
  *
  * Static markup, so it stays a server component and ships no JavaScript. The
  * four-part card hover is entirely CSS.
@@ -18,9 +18,9 @@ export function Skills() {
     <section id="skills" className="section skills-section scroll-mt-10">
       <div className="wrap">
         <Eyebrow>Toolbox</Eyebrow>
-        <H2>Skills Acquired.</H2>
+        <H2>Technical Expertise.</H2>
         <Lede>
-          A comprehensive toolkit for building modern, scalable applications.
+          The languages, platforms and practices behind the work above.
         </Lede>
 
         <div className="skills-grid">
@@ -44,10 +44,10 @@ export function Skills() {
  * the section's H2, and the outline should say so.
  */
 function SkillCard({ category }: { category: SkillCategory }) {
-  const { title, icon: Icon, alt, items } = category;
+  const { title, icon: Icon, alt, wide, items } = category;
 
   return (
-    <div className="skill-card">
+    <div className={wide ? "skill-card skill-card-wide" : "skill-card"}>
       <div className="skill-head">
         <div className={alt ? "skill-icon skill-icon-alt" : "skill-icon"}>
           <Icon className="size-5" />

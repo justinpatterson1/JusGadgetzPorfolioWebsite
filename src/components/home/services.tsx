@@ -3,8 +3,8 @@ import { Eyebrow, H2, Lede } from "@/components/ui";
 import { SERVICES, type Service } from "@/lib/content/services";
 
 /**
- * Section 05 — Services. Spec: context/features/06-services.md, with the
- * anatomy in context/features/design/11-services.md.
+ * Section 06 — Services. Spec: context/features/16_SERVICES_SECTION.md, layered on
+ * the build from 06-services.md and design/11-services.md.
  *
  * Static markup, so it stays a server component and ships no JavaScript. The
  * card hover — lift, tint, border, left-edge bar, link reveal — is all CSS.
@@ -21,7 +21,7 @@ export function Services() {
         <Eyebrow centered>What I Offer</Eyebrow>
         <H2>Services &amp; Solutions.</H2>
         <Lede centered>
-          Specialized technical services tailored to your business needs.
+          Software services built around real business requirements.
         </Lede>
 
         {/* A list, so the six are announced as a set. */}
@@ -40,9 +40,7 @@ export function Services() {
  *
  * "Learn more" is a real link to `#contact` — open issue #10, decided
  * 2026-09-25. There is no per-service page to send anyone to, and the honest
- * next step after reading a service is to get in touch. Until the Contact
- * section lands (prompt 08) the target does not exist and the link only
- * changes the hash.
+ * next step after reading a service is to get in touch.
  *
  * All six links share a target and visible text, so each carries a hidden
  * " about {title}" — six identical "Learn more" entries in a screen reader's
