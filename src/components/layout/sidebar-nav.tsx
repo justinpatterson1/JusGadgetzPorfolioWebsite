@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { NAV_ITEMS } from "@/lib/content/nav";
+import { NAV_ITEMS, type NavItem } from "@/lib/content/nav";
 import { cn } from "@/lib/cn";
-import { scrollToSection } from "@/lib/scroll";
+import { useSectionLink } from "@/lib/use-section-link";
 
 import { SidebarTooltip } from "./sidebar-tooltip";
 
@@ -23,10 +24,11 @@ const HOME_THRESHOLD = 200;
  * Measurements are taken inside a rAF so a burst of scroll events collapses
  * into one read per frame.
  */
-function useScrollSpy(): string | null {
+function useScrollSpy(enabled: boolean): string | null {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
     let frame = 0;
 
     const measure = () => {
@@ -77,7 +79,7 @@ function useScrollSpy(): string | null {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [enabled]);
 
   return activeId;
 }
@@ -86,65 +88,70 @@ function useScrollSpy(): string | null {
  * The rail's navigation group — design-system.md §7.2.
  *
  * Real anchors rather than buttons: they are in-page navigation, so they should
- * be focusable, openable in a new tab, and still work with JavaScript off. The
- * click handler only exists to add the 40px offset and the smooth easing, and
- * defers to the browser when a modifier key is held.
+ * be focusable, openable in a new tab, and still work with JavaScript off.
+ *
+ * The scrollspy only runs on the homepage. On a case-study page (`/work/…`)
+ * "Work" is the active item — the section the page belongs to — and every link
+ * points back at its homepage section (`useSectionLink`).
  */
 export function SidebarNav() {
-  const activeId = useScrollSpy();
-
-  const handleClick =
-    (id: string | null) => (event: MouseEvent<HTMLAnchorElement>) => {
-      /* let the browser handle new-tab / new-window clicks */
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-        return;
-      }
-      event.preventDefault();
-      scrollToSection(id);
-    };
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const spied = useScrollSpy(onHome);
+  const activeId = onHome
+    ? spied
+    : pathname.startsWith("/work/")
+      ? "work"
+      : undefined;
 
   return (
     <nav aria-label="Sections" className="flex flex-1 items-center">
       <ul className="m-0 flex w-full list-none flex-col items-center gap-2 p-0">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const active = activeId === item.id;
-
-          return (
-            <li
-              key={item.label}
-              className="relative flex w-full justify-center"
-            >
-              {/* 3×22px accent bar on the rail's own left edge, not the tile's.
-                  The <li> spans the full rail, so `left-0` lands there at every
-                  breakpoint without re-deriving the tile inset. */}
-              {active && (
-                <span
-                  aria-hidden
-                  className="absolute left-0 top-1/2 h-5.5 w-0.75 -translate-y-1/2 rounded-r-full bg-accent"
-                />
-              )}
-
-              <a
-                href={item.id === null ? "#" : `#${item.id}`}
-                aria-label={item.label}
-                aria-current={active ? "page" : undefined}
-                onClick={handleClick(item.id)}
-                className={cn(
-                  "group relative flex size-12 items-center justify-center rounded-xl hand:size-10.5",
-                  "transition-colors duration-200 ease-hover",
-                  active
-                    ? "bg-accent-soft text-accent"
-                    : "text-ink-3 hover:bg-accent-soft hover:text-ink",
-                )}
-              >
-                <Icon width={20} height={20} />
-                <SidebarTooltip>{item.label}</SidebarTooltip>
-              </a>
-            </li>
-          );
-        })}
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.label}
+            item={item}
+            active={activeId === item.id}
+          />
+        ))}
       </ul>
     </nav>
+  );
+}
+
+/** One rail item. Its own component so each can call `useSectionLink`. */
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  const Icon = item.icon;
+  /* Every page renders the footer, so Contact is in-page everywhere. */
+  const link = useSectionLink(item.id, { local: item.id === "contact" });
+
+  return (
+    <li className="relative flex w-full justify-center">
+      {/* 3×22px accent bar on the rail's own left edge, not the tile's.
+          The <li> spans the full rail, so `left-0` lands there at every
+          breakpoint without re-deriving the tile inset. */}
+      {active && (
+        <span
+          aria-hidden
+          className="absolute left-0 top-1/2 h-5.5 w-0.75 -translate-y-1/2 rounded-r-full bg-accent"
+        />
+      )}
+
+      <a
+        {...link}
+        aria-label={item.label}
+        aria-current={active ? "page" : undefined}
+        className={cn(
+          "group relative flex size-12 items-center justify-center rounded-xl hand:size-10.5",
+          "transition-colors duration-200 ease-hover",
+          active
+            ? "bg-accent-soft text-accent"
+            : "text-ink-3 hover:bg-accent-soft hover:text-ink",
+        )}
+      >
+        <Icon width={20} height={20} />
+        <SidebarTooltip>{item.label}</SidebarTooltip>
+      </a>
+    </li>
   );
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
+import { PERSON_NAME, PERSON_TITLE } from "@/lib/content/profile";
+import { SITE_URL } from "@/lib/site-url";
 import { PALETTES, DEFAULT_PALETTE } from "@/lib/theme/palettes";
 import {
   DEFAULT_THEME,
@@ -32,10 +34,38 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+const SITE_TITLE = `${PERSON_NAME} | ${PERSON_TITLE}`;
+const SITE_DESCRIPTION =
+  "Software Developer and Systems Analyst from Trinidad & Tobago specializing in full-stack applications, backend systems, APIs, database solutions and business process automation.";
+
+/**
+ * Site metadata — Prompt 21. Case-study pages override the title (through the
+ * template), description, canonical and Open Graph fields.
+ *
+ * No Open Graph image at the root: there is no real site-wide preview image,
+ * and Prompt 21 rules out referencing one that doesn't exist. No JSON-LD
+ * either — the site never had any, and Prompt 21 only asks to update it.
+ */
 export const metadata: Metadata = {
-  title: "JusDev. — Full Stack Developer",
-  description:
-    "Justin Sheppard is a full stack developer in Trinidad and Tobago, building fast, considered web applications end to end.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: `%s | ${PERSON_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: PERSON_NAME,
+  authors: [{ name: PERSON_NAME }],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: PERSON_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_TT",
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 /**

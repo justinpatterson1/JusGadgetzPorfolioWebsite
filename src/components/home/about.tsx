@@ -1,9 +1,13 @@
-import { UserIcon } from "@/components/icons";
 import { Eyebrow, H2, Lede } from "@/components/ui";
+import {
+  PERSON_LOCATION,
+  PERSON_NAME,
+  PERSON_TITLE,
+} from "@/lib/content/profile";
 
 /**
- * Section 02 — About. Spec: context/features/03-about.md, with the anatomy in
- * context/features/design/08-about.md.
+ * Section 02 — About. Spec: context/features/11_ABOUT_SECTION.md, layered on
+ * the build from 03-about.md and design/08-about.md.
  *
  * Static markup, so it stays a server component and ships no JavaScript.
  *
@@ -25,50 +29,53 @@ export function About() {
             <div className="photo-deco photo-deco-1" aria-hidden />
             <div className="photo-deco photo-deco-2" aria-hidden />
             <div className="photo-frame">
-              {/* To use the real photo, delete this placeholder and drop in:
-                    <Image src="/me.jpg" alt="Justin Sheppard" fill sizes="400px" />
-                  (next/image, per coding-standards.md — `fill` needs the
-                  positioned parent .photo-frame already provides). The frame's
-                  `img` rule in globals.css makes it cover edge to edge with no
-                  further CSS. Source image: 4:5 portrait, at least 800×1000,
-                  subject centered horizontally — `cover` crops from the edges.
-                  Tracked as open-issues.md #7. */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3.5">
-                <UserIcon className="size-14 text-accent-strong opacity-55" />
-                {/* Monospace is the point: it reads as a developer
-                    instruction rather than as designed content. */}
-                <code className="rounded-lg border border-hair bg-bg-elev px-3.5 py-2 font-mono text-[12px] text-ink-2">
-                  insert photo: me.jpg
-                </code>
+              {/* No photo exists in the repo, so the frame is an identity card
+                  rather than an empty slot (Prompt 10: no placeholder text, no
+                  broken image, no stock or generated person). To use a real
+                  photo, replace this block with:
+                    <Image src="/me.jpg" alt={PERSON_NAME} fill sizes="400px" />
+                  (next/image — `fill` needs the positioned parent .photo-frame
+                  already provides, and the frame's `img` rule in globals.css
+                  covers it edge to edge). Source image: 4:5 portrait, at least
+                  800×1000, subject centered. Tracked as open-issues.md #7. */}
+              <div className="photo-id">
+                <div className="photo-id-mark" aria-hidden>
+                  JP
+                </div>
+                <p className="text-title text-ink">{PERSON_NAME}</p>
+                <p className="mt-1 text-label text-ink-3">{PERSON_TITLE}</p>
+                <p className="photo-id-place text-pill">{PERSON_LOCATION}</p>
               </div>
             </div>
           </div>
 
           <div>
             <Eyebrow>About me</Eyebrow>
-            <H2>A solutions-focused builder, from Trinidad &amp; Tobago.</H2>
+            <H2>Software development meets business problem-solving.</H2>
             <Lede>
-              My expertise spans frontend development, backend architecture,
-              APIs, and database engineering. I specialize in building scalable
-              applications that are reliable and performance-driven — and I
-              excel at automating processes and streamlining workflows to
-              improve efficiency.
+              I&apos;m a software developer and systems analyst with a
+              background in IT, financial technology and business systems. My
+              work spans full-stack development, backend systems, APIs,
+              database engineering and process automation.
             </Lede>
             <Lede className="mt-3.5">
-              Every project I take on is approached with the same lens: build
-              platforms designed for real impact and sustainable growth.
+              I enjoy solving the problems that sit between software and
+              operations, whether that means building an application,
+              integrating external systems, automating a repetitive workflow or
+              turning complex business rules into reliable software.
             </Lede>
 
-            {/* Four tiles, hardcoded rather than mapped: there are exactly four
-                and they are not expected to grow. If they ever become dynamic,
-                extract an ABOUT_FACTS constant alongside SKILLS and SERVICES.
+            {/* Four capability tiles (Prompt 11) in place of the old
+                statistics — no years-of-experience figure and no open-source
+                claim, since neither is backed by anything on the site.
+                Hardcoded rather than mapped: there are exactly four.
 
                 No hover state — these are facts, not controls. */}
             <dl className="mt-8 grid grid-cols-2 gap-5 hand:grid-cols-1">
-              <Fact value="5+ years" label="Shipping production code" />
-              <Fact value="Full Stack" label="Frontend, backend & infra" />
-              <Fact value="Remote-first" label="Working across timezones" />
-              <Fact value="Open Source" label="Contributing & maintaining" />
+              <Fact value="Full Stack" label="Frontend & backend development" />
+              <Fact value="Business Systems" label="Automation & integrations" />
+              <Fact value="Data" label="SQL & database engineering" />
+              <Fact value="Production" label="Deployment & support" />
             </dl>
           </div>
         </div>
@@ -78,14 +85,11 @@ export function About() {
 }
 
 /**
- * One fact tile.
+ * One capability tile.
  *
  * `<dl>`/`<dt>`/`<dd>` rather than divs: each tile is a term and its
  * description, which is exactly what a description list is for, and it gives
  * the pairing to assistive tech for free.
- *
- * The value slot holds short accent phrases, not only numerals. Keep each
- * under ~13 characters or the tiles fall out of alignment.
  */
 function Fact({ value, label }: { value: string; label: string }) {
   return (

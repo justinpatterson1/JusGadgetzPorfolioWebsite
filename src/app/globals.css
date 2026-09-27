@@ -222,22 +222,28 @@ html[data-theme="dark"] {
    -------------------------------------------------------------------------- */
 
 @theme {
-  /* The floor is min(48px, 11vw), not a flat 48px: at 48px "experiences" is
-     284px wide, wider than the hero column on any phone under ~392px — 17px
-     into the gutter at 375, cut off past the screen edge at 320. 11vw only
-     undercuts 48px below 436px, so nothing changes at tablet or desktop. */
-  --text-hero: clamp(min(48px, 11vw), 6.4vw, 84px);
+  /* Sized so the headline's widest line, "business problems.", always fits the
+     hero column. It is 9.43em wide, and in the two-column layout the column is
+     only ~0.45vw just above 980px, so 4.7vw is the most that fits at every
+     width; 64px caps it where the column stops growing (the old 84px measured
+     792px against a 619px column at 1440). Below 980px the column goes full
+     width and the size steps back up — see the breakpoint overrides at the
+     bottom of the file, which retarget this variable. */
+  --text-hero: clamp(46px, 4.7vw, 64px);
   --text-hero--line-height: 1.02;
   --text-hero--letter-spacing: -0.035em;
   --text-hero--font-weight: var(--headline-weight);
 
-  --text-h2: clamp(36px, 4.4vw, 56px);
+  /* The floor drops below 36px only under 400px wide, so the longest single
+     words ("Development.", "Professional") fit a 320px phone's 212px column
+     rather than overflowing it — the same fix as the hero's min(48px, 11vw). */
+  --text-h2: clamp(min(36px, 9vw), 4.4vw, 56px);
   --text-h2--line-height: 1.05;
   --text-h2--letter-spacing: -0.03em;
   --text-h2--font-weight: var(--headline-weight);
 
   /* footer headline — one step larger than a section headline */
-  --text-h2-lg: clamp(40px, 5vw, 64px);
+  --text-h2-lg: clamp(min(40px, 11vw), 5vw, 64px);
   --text-h2-lg--line-height: 1.02;
   --text-h2-lg--letter-spacing: -0.03em;
   --text-h2-lg--font-weight: var(--headline-weight);
@@ -425,6 +431,19 @@ html[data-theme="dark"] {
     isolation: isolate;
   }
 
+  /* The three designed lines. Block, not <br />, so that on phones they can
+     go inline and wrap naturally — at the phone size a forced three-line
+     shape would need a font too small to read as a headline. */
+  .hero-title .hero-line {
+    display: block;
+  }
+
+  @media (max-width: 640px) {
+    .hero-title .hero-line {
+      display: inline;
+    }
+  }
+
   /* The terminal period is a pseudo-element so the word is accent-colored but
      the period stays ink — the same shape as the `JusDev.` mark. It must not
      be in the text content, or it inherits the accent with the word. */
@@ -437,6 +456,37 @@ html[data-theme="dark"] {
   .hero-title .accent::after {
     content: ".";
     color: var(--ink);
+  }
+
+  /* GitHub and LinkedIn beside the CTAs (Prompt 10). 44px round tiles in the
+     ghost CTA's language — hairline at rest, ink fill on hover, the same 1px
+     lift — so they read as secondary to "View My Work". */
+  .hero-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    color: var(--ink-2);
+    transition:
+      translate 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .hero-social:hover {
+    translate: 0 -1px;
+    color: var(--bg);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .hero-social:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   .hero-bg {
@@ -1029,6 +1079,58 @@ html[data-theme="dark"] {
     background: var(--co-coral);
     border-color: var(--co-coral);
   }
+
+  /* The identity card that stands in for a photo (Prompt 10): no placeholder
+     text, no empty-slot graphic. The monogram tile is the sidebar brand mark
+     at 112px — --ink ground, --bg letters, accent corner dot — so it reads as
+     the site's own mark rather than a stand-in. Delete these rules with the
+     block in about.tsx when a real photo lands. */
+  .photo-id {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+
+  .photo-id-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 112px;
+    height: 112px;
+    margin-bottom: 22px;
+    border-radius: 28px;
+    color: var(--bg);
+    background: var(--ink);
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    box-shadow: 0 30px 60px -30px var(--shadow-deep);
+  }
+
+  .photo-id-mark::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .photo-id-place {
+    margin-top: 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    color: var(--ink-2);
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1138,6 +1240,12 @@ html[data-theme="dark"] {
 
   /* `relative` on the head and on .chips (in the Chips primitive) is what keeps
      both above the absolutely-positioned ::before wash. */
+  /* The odd fifth category spans both columns rather than leaving a hole in
+     the 2×2 (see SKILLS). At ≤980px there is one column and it is a no-op. */
+  .skill-card-wide {
+    grid-column: 1 / -1;
+  }
+
   .skill-head {
     position: relative;
     display: flex;
@@ -1182,13 +1290,123 @@ html[data-theme="dark"] {
       gap: 40px;
     }
   }
+
+  /* 22px on phones: at 28px, "Development" beside the 42px well is a few
+     pixels wider than a 320px screen leaves the title. */
+  @media (max-width: 640px) {
+    .skill-card {
+      padding: 22px;
+    }
+  }
 }
 
 /* --------------------------------------------------------------------------
-   Projects — split header, card grid, generated thumbnails
-   Spec: context/features/05-projects.md, anatomy in
-   context/features/design/10-projects.md, shared values in design-system.md
-   §5, §7.6, §8.
+   Professional Experience — one résumé-style role card
+   Spec: context/features/12_PROFESSIONAL_EXPERIENCE.md. No PRD under
+   features/design/, so every value is borrowed: the project card's surface
+   and 20px radius, Skills' 42px icon well, and the 56px header → content gap.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  .xp-list {
+    display: grid;
+    gap: 22px;
+    margin-top: 56px;
+  }
+
+  /* Role on the left, responsibilities on the right, split by a hairline —
+     the shape of a résumé entry. The columns carry their own padding rather
+     than a grid gap so the hairline can sit exactly between them. */
+  .xp-card {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    padding: 36px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+  }
+
+  .xp-card > :first-child {
+    padding-right: 44px;
+  }
+
+  .xp-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 18px;
+    border-radius: 11px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+
+  .xp-sector {
+    margin: 4px 0 14px;
+    color: var(--accent-strong);
+  }
+
+  .xp-highlights {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    padding-left: 44px;
+    border-left: 1px solid var(--hair);
+    list-style: none;
+  }
+
+  .xp-highlights li {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  /* The pill's 7px accent dot, reused as the bullet. */
+  .xp-highlights li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  @media (max-width: 980px) {
+    .xp-card {
+      grid-template-columns: 1fr;
+    }
+
+    .xp-card > :first-child {
+      padding-right: 0;
+      padding-bottom: 26px;
+    }
+
+    .xp-highlights {
+      padding-left: 0;
+      padding-top: 26px;
+      border-left: 0;
+      border-top: 1px solid var(--hair);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .xp-card {
+      padding: 24px;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Selected Work — split header, one featured public project, compact
+   professional-work cards
+   Spec: context/features/13_SELECTED_WORK_CASE_STUDIES.md, replacing the
+   template-project grid from 05-projects.md. Shared values in
+   design-system.md §5, §7.6, §8.
+
+   The generated thumbnails are gone with the template projects: the public
+   project has a real screenshot, and professional work has no imagery by
+   design (see work.tsx).
 
    No `.section` padding override here, so this block can live entirely in
    @layer components — the §7.5.1 trap only bites rules competing with
@@ -1206,110 +1424,272 @@ html[data-theme="dark"] {
     margin-bottom: 56px;
   }
 
-  .projects-grid {
+  /* minmax(0, 1fr), not the implicit auto column: a grid item's minimum is
+     its content width, so the slider's track would grow to fit every card
+     and overflow the page instead of scrolling inside itself. */
+  .work-stack {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 26px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 56px;
   }
 
-  .project {
+  /* The featured card: screenshot 1.15fr, copy 0.85fr — the Hero's ratio, so
+     the image, being the evidence, gets the larger share. Same surface,
+     radius and 4px lift as the old project card (§5, §8). */
+  .work-feature {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
     background: var(--bg-elev);
     border: 1px solid var(--hair);
     border-radius: 20px;
-    /* Load-bearing twice over: it clips the thumbnail to the 20px radius (the
-       thumb has no radius of its own) and it contains the thumbnail's hover
-       scale so the card's own corners stay square-free. */
+    /* clips the screenshot to the radius and contains its hover scale */
     overflow: hidden;
     transition:
       transform 0.3s ease,
       box-shadow 0.3s ease;
   }
 
-  /* 4px and the deeper shadow, one step above Skills' 3px: §8's lift table
-     makes Projects the most tactile section on the page.
-
-     No `cursor: pointer` — see the note in projects.tsx. The card is not a
-     link, so it does not claim to be one. */
-  .project:hover {
+  .work-feature:hover {
     transform: translateY(-4px);
     box-shadow: 0 30px 60px -30px var(--shadow-deep);
   }
 
-  .project-thumb {
+  /* The image is absolutely positioned so its intrinsic height never drives
+     the row — the copy column sets the card's height and the screenshot
+     covers whatever that is. Centre crop keeps both the storefront headline
+     and the product photo in frame at the card's ~1.5:1. */
+  .work-feature-media {
     position: relative;
-    aspect-ratio: 16 / 10;
+    display: block;
+    min-height: 340px;
     overflow: hidden;
-    /* Palette-aware fallback for any card without one of the three fixed
-       gradients below. */
-    background: linear-gradient(
-      135deg,
-      var(--accent-soft),
-      color-mix(in oklab, var(--accent) 22%, var(--bg-elev))
-    );
-    transition: scale 0.3s ease;
+    background: var(--surface-2);
   }
 
-  /* The prompt asks for a slight thumbnail scale on hover; PRD 10 and §8 are
-     silent on it, and nothing contradicts it. `scale` is named as its own
-     property rather than folded into `transform`, because that is what
-     Tailwind v4 emits and what this transition can actually animate. */
-  .project:hover .project-thumb {
-    scale: 1.04;
-  }
-
-  /* Three fixed gradients, **deliberately independent of the accent palette.**
-     Projects should read as three distinct products, not three tints of one
-     brand color, so these are the one set of colors on the page that does not
-     follow the palette. Hues: blue 250->230, warm 30->25, deep violet 285->280
-     (the only dark one). */
-  .project-thumb-1 {
-    background: linear-gradient(135deg, oklch(0.92 0.06 250), oklch(0.78 0.12 230));
-  }
-
-  .project-thumb-2 {
-    background: linear-gradient(135deg, oklch(0.94 0.05 30), oklch(0.78 0.14 25));
-  }
-
-  .project-thumb-3 {
-    background: linear-gradient(135deg, oklch(0.32 0.18 285), oklch(0.18 0.16 280));
-  }
-
-  .project-deco {
+  .work-feature-media img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.35;
+    object-fit: cover;
+    transition: scale 0.3s ease;
   }
 
-  .project-glyph {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    /* Literal white over a gradient that is dark in both themes — the §2.4 SVG
-       and glyph exception. --on-ink would track the theme and must not here. */
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 96px;
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  .work-feature:hover .work-feature-media img {
+    scale: 1.04;
   }
 
-  .project-body {
-    padding: 24px;
+  .work-feature-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 36px;
   }
 
-  /* The title sat in a flex row with the action icons in PRD 10. With those
-     removed it is the only thing on its line, so the row is gone and the
-     margin moves here. */
-  .project-title {
+  .work-label {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .work-title {
     margin-bottom: 8px;
   }
 
-  .project-desc {
+  .work-desc {
     margin-bottom: 18px;
+  }
+
+  .work-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 26px;
+  }
+
+  /* "Professional work" is a real <h3> — the group heading the compact cards'
+     <h4>s sit under — styled as a small label. */
+  .work-group-title {
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .work-note {
+    color: var(--ink-3);
+  }
+
+  /* ---- Professional-work slider (work-slider.tsx) ---- */
+
+  /* Group heading left, arrows right, bottom-aligned like .projects-head. */
+  .work-slider-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 14px;
+  }
+
+  .work-slider-controls {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .work-slider-pos {
+    margin-right: 6px;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* The Hero's round icon link, as a button: hairline at rest, ink fill and a
+     1px lift on hover — the ghost CTA's language (§7.1, §8). */
+  .work-slider-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid var(--hair-2);
+    color: var(--ink-2);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      translate 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .work-slider-btn:hover {
+    translate: 0 -1px;
+    color: var(--bg);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .work-slider-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* A horizontal scroll container, so it
+     still works with no JavaScript (swipe, trackpad, shift-scroll).
+
+     `overflow-x: auto` forces `overflow-y` to clip too, which would cut off
+     the cards' 4px hover lift and their deep shadow. The block padding makes
+     room for both, and the matching negative margin cancels it in the layout,
+     so the track sits exactly where the grid did. */
+  /* `position: relative` is load-bearing: it makes the track the containing
+     block for absolutely positioned descendants. Without it the visually
+     hidden (`sr-only`) link labels on off-screen slides resolve against an
+     ancestor *outside* the scroll container, escape its clip, and widen the
+     whole page (828px at 1440 when this was found). */
+  .work-track {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 26px;
+    padding: 12px 6px 44px;
+    margin: -12px -6px -44px;
+    /* the 6px inline room keeps a card's focus ring (2px + 3px offset) from
+       being clipped at the track edges; scroll-padding keeps snapping flush */
+    scroll-padding-inline: 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+  }
+
+  .work-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .work-track > li {
+    display: flex;
+    scroll-snap-align: start;
+  }
+
+  /* Cards per view. `wide` is the public-project card, one at a time at every
+     width; `compact` is two side by side, one below 980px. */
+  .work-track-wide {
+    grid-auto-columns: 100%;
+  }
+
+  .work-track-compact {
+    grid-auto-columns: calc((100% - 26px) / 2);
+  }
+
+  /* The wide card is a grid of its own; as the slide it has to fill it. */
+  .work-track > li > .work-feature {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Text-only. The description grows so the tags and link line up along the
+     bottom of the row whatever each summary's length. */
+  .work-card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 26px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .work-card .work-desc {
+    flex: 1;
+  }
+
+  .work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -30px var(--shadow-deep);
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--hair));
+  }
+
+  .work-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    color: var(--accent-strong);
+  }
+
+  /* The stretched link: its ::after covers the card, so the whole card is one
+     click target with one accessible name. The focus ring goes on the same
+     overlay, so it outlines the card rather than the words. */
+  .work-card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .work-card-link:focus-visible {
+    outline: none;
+  }
+
+  .work-card-link:focus-visible::after {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .work-card-link svg {
+    transition: translate 0.2s ease;
+  }
+
+  .work-card:hover .work-card-link svg {
+    translate: 3px 0;
   }
 
   /* A <ul> for the tags, so assistive tech announces the count. */
@@ -1333,17 +1713,41 @@ html[data-theme="dark"] {
   }
 
   @media (max-width: 980px) {
-    /* Two columns leaves the third card alone in the left column. Accepted
-       (PRD 10): the cards are tall and the gap is small, so it reads as a row
-       that ran out rather than as a hole. */
-    .projects-grid {
-      grid-template-columns: 1fr 1fr;
+    /* Stacked, with the copy top-aligned under the image. Slides share the
+       tallest one's height, so a card with a shorter summary would otherwise
+       centre its copy and open a gap under the screenshot; this puts the spare
+       space at the bottom of the card instead. */
+    .work-feature {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+
+    .work-feature-body {
+      justify-content: flex-start;
+    }
+
+    .work-feature-media {
+      min-height: 0;
+      aspect-ratio: 2 / 1;
+    }
+
+    /* One card per view. */
+    .work-track-compact {
+      grid-auto-columns: 100%;
+      gap: 18px;
     }
   }
 
   @media (max-width: 640px) {
-    .projects-grid {
-      grid-template-columns: 1fr;
+    .work-feature-body,
+    .work-card {
+      padding: 24px;
+    }
+
+    .work-slider-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
     }
 
     /* The split header stacks, CTA below the copy and left-aligned. */
@@ -1533,98 +1937,94 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
-   Tech ticker — one line of motion between Services and the footer
-   Spec: context/features/07-tech-ticker.md, anatomy in
-   context/features/design/12-tech-ticker.md, shared values in design-system.md
-   §7.8, §8.
+   Education & Professional Development — completed vs in progress
+   Spec: context/features/17_EDUCATION_AND_DEVELOPMENT.md. Values borrowed
+   from the About fact tile (14px radius, --bg-elev, --hair) and Skills' icon
+   well.
 
-   Not a `.section`, so it has nothing to compete with and the whole block
-   lives in @layer components (§7.5.1 does not apply).
-
-   **The loop math, and why it is not PRD 12's.** A seamless marquee needs the
-   track to be exactly two periods wide, where one period is one copy of the
-   list plus the space that follows it. PRD 12 spaced items with `gap` on the
-   track, which makes the track 34 names + 33 gaps — one gap short of two
-   periods — so −50% landed 28px short and the strip jumped 28px every loop.
-   (Its inert `gap` on `.ticker` was meant to cover this; a gap does nothing
-   with one child.) Here every name carries its own trailing margin, so each
-   copy is 17 × (name + 56px) and the track is exactly two of them, whatever
-   the names measure.
+   **The two tile styles must stay unmistakably different** (Prompt 17): a
+   completed credential is a solid tile with an icon; an in-progress one is a
+   dashed, unfilled outline with a coral "In progress" badge. Solid vs dashed
+   reads as done vs not-yet even before the badge is read.
    -------------------------------------------------------------------------- */
 
 @layer components {
-  /* 80px, lighter than the 110px section standard: one line tall, it should
-     read as a divider band. --bg-elev plus the two hairlines is what separates
-     it from --bg on either side, in both themes. */
-  .ticker-section {
-    padding-block: 80px;
-    border-block: 1px solid var(--hair);
-    background: var(--bg-elev);
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 56px;
   }
 
-  /* The eyebrow primitive brings a 14px bottom margin; this makes up the 28px
-     §7.8 puts between the label and the strip. */
-  .ticker {
-    margin-top: 14px;
-    overflow: hidden;
-    mask-image: linear-gradient(
-      90deg,
-      transparent,
-      black 8%,
-      black 92%,
-      transparent
-    );
-  }
-
-  /* `width: max-content` rather than PRD 12's `flex-shrink: 0`: either keeps
-     the track from being squeezed to the container, but this says so without
-     depending on the parent being a flex container. `linear` is required —
-     any easing visibly speeds up and slows down within each loop. */
-  .ticker-track {
-    display: flex;
-    width: max-content;
-    animation: ticker-scroll 40s linear infinite;
-  }
-
-  /* `animation-play-state` holds the current position, so leaving resumes
-     from where it stopped. On touch screens a tap sets :hover, which gives
-     phones the same pause. */
-  .ticker:hover .ticker-track {
-    animation-play-state: paused;
-  }
-
-  .ticker-list {
-    display: flex;
-  }
-
-  /* --ink-3, not PRD 12's --ink-4 (decided 2026-09-25). PRD 12 accepted
-     --ink-4's ~2.4:1 because every name "also appears as a Skills chip" — but
-     Stripe, Redis, MongoDB, Prisma and Firebase do not, which is the case it
-     says to darken for. --ink-3 is 5.2:1 light / 5.6:1 dark on --bg-elev.
-     `nowrap` is load-bearing: a wrapped name changes the period width and
-     breaks the loop. */
-  .tech-item {
-    margin-inline-end: 56px;
+  .edu-group-title {
+    margin-bottom: 14px;
+    text-transform: uppercase;
     color: var(--ink-3);
+  }
+
+  .edu-list {
+    display: grid;
+    gap: 14px;
+    list-style: none;
+  }
+
+  .edu-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+  }
+
+  .edu-icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+
+  .edu-item-progress {
+    background: transparent;
+    border: 1px dashed var(--hair-2);
+  }
+
+  /* Coral, not accent, so it cannot be mistaken for the accent tags that mark
+     real technologies elsewhere. --co-coral-strong is derived per palette and
+     inverts in dark mode (§7.5), so the badge reads on both. */
+  .edu-badge {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--co-coral-strong);
+    background: var(--co-coral-soft);
+    border: 1px solid color-mix(in oklab, var(--co-coral) 25%, transparent);
     white-space: nowrap;
-    cursor: default;
-    transition: color 0.2s ease;
   }
 
-  .tech-item:hover {
-    color: var(--accent);
+  @media (max-width: 980px) {
+    .edu-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
   }
-}
 
-/* Namespaced — PRD 12's `scroll` is too generic for a global keyframe (the
-   §4 naming rule). Stopped by the reduced-motion guard below, which has named
-   .ticker-track since PRD 00. */
-@keyframes ticker-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
+  @media (max-width: 640px) {
+    .edu-item {
+      gap: 14px;
+      padding: 18px;
+    }
+
+    /* The badge drops under the text rather than squeezing it. */
+    .edu-item-progress {
+      flex-direction: column;
+      gap: 12px;
+    }
   }
 }
 
@@ -1642,7 +2042,7 @@ html[data-theme="dark"] {
    fine for the 40–64px headline, which needs 3:1, but not for the 15px link
    rows on hover, which need 4.5:1. The rows turn --accent-light instead
    (8.9:1 or better on all four). And the bottom bar is --on-ink-2 rather than
-   --on-ink-3 (3.6:1 at 13px), decided 2026-09-25, as the ticker was.
+   --on-ink-3 (3.6:1 at 13px), decided 2026-09-25.
    -------------------------------------------------------------------------- */
 
 @layer components {
@@ -1770,6 +2170,309 @@ html[data-theme="dark"] {
 }
 
 /* --------------------------------------------------------------------------
+   Case-study pages — /work/[slug]
+   Spec: context/features/14_CASE_STUDY_ARCHITECTURE.md. No PRD under
+   features/design/; composed from existing values — the Hero's 96px top
+   padding, the 20px project radius and deep shadow, the 14px tile, and the
+   type scale's `text-h2` / `text-stat` roles.
+
+   Reading comfort is the brief: a 720px measure, 16px/1.7 body, sections
+   broken into lists and titled cards, and a sticky contents list on wide
+   screens that disappears below 980px.
+   -------------------------------------------------------------------------- */
+
+@layer components {
+  .cs-head {
+    padding-top: 96px;
+    padding-bottom: 64px;
+  }
+
+  .cs-back {
+    /* flex + fit-content, not inline-flex: the eyebrow after it is inline-flex
+       too, and the two would share a line. */
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 36px;
+    color: var(--ink-3);
+    transition: color 0.2s ease;
+  }
+
+  .cs-back:hover {
+    color: var(--ink);
+  }
+
+  .cs-title {
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .cs-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .cs-notice {
+    max-width: 600px;
+    margin-top: 28px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    color: var(--ink-2);
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+
+  .cs-shot {
+    margin-top: 48px;
+    overflow: hidden;
+    border: 1px solid var(--hair);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px -30px var(--shadow-deep);
+  }
+
+  .cs-shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .cs-layout {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 720px);
+    gap: 72px;
+    padding-bottom: 110px;
+  }
+
+  .cs-toc {
+    position: sticky;
+    top: 40px;
+    align-self: start;
+  }
+
+  .cs-toc-title {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .cs-toc ol {
+    list-style: none;
+    border-left: 1px solid var(--hair);
+  }
+
+  .cs-toc a {
+    display: block;
+    padding: 6px 0 6px 14px;
+    color: var(--ink-3);
+    transition: color 0.2s ease;
+  }
+
+  .cs-toc a:hover {
+    color: var(--ink);
+  }
+
+  .cs-section {
+    margin-bottom: 64px;
+  }
+
+  .cs-num {
+    margin-bottom: 6px;
+    color: var(--accent-strong);
+  }
+
+  .cs-h2 {
+    margin-bottom: 18px;
+  }
+
+  .cs-p {
+    margin-bottom: 14px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  .cs-bullets {
+    display: grid;
+    gap: 10px;
+    list-style: none;
+  }
+
+  .cs-bullets li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-2);
+  }
+
+  /* The pill's 7px accent dot, as in Experience. */
+  .cs-bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.68em;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .cs-cards {
+    display: grid;
+    gap: 14px;
+    list-style: none;
+  }
+
+  .cs-cards-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cs-card {
+    padding: 20px 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+  }
+
+  .cs-back-end {
+    margin: 8px 0 0;
+  }
+
+  /* ---- Architecture diagram ---- */
+
+  .arch-grid {
+    display: grid;
+    gap: 24px;
+  }
+
+  .arch-grid-branch {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .arch-flow {
+    display: grid;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .arch-node {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+  }
+
+  /* The connector down into each node after the first: a 28px stem through
+     the gap, then a small arrowhead. Decoration only — the <ol> already says
+     "in this order". --ink-4 is fine here; it is not text. */
+  .arch-node + .arch-node::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -28px;
+    height: 22px;
+    border-left: 1.5px solid var(--ink-4);
+    translate: -50% 0;
+  }
+
+  .arch-node + .arch-node::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -7px;
+    border-inline: 5px solid transparent;
+    border-top: 6px solid var(--ink-4);
+    translate: -50% 0;
+  }
+
+  /* The node the external services hang off shares the branch box's accent
+     edge — the visual half of the pairing; the branch names it in text. */
+  .arch-node-anchor {
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--hair));
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .arch-branch {
+    padding: 18px;
+    border: 1px dashed color-mix(in oklab, var(--accent) 45%, var(--hair));
+    border-radius: 16px;
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+
+  .arch-branch-title {
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+
+  .arch-branch-from {
+    margin: 4px 0 14px;
+  }
+
+  /* auto-fill rather than a fixed two columns: it drops to one column on its
+     own when the branch box is too narrow for two, with no extra breakpoint. */
+  .arch-branch-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    list-style: none;
+  }
+
+  .arch-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 10px 12px;
+    background: var(--bg-elev);
+    border: 1px solid var(--hair);
+    /* 8px — the tooltip / code-label step on the §5 scale */
+    border-radius: 8px;
+  }
+
+  .arch-caption {
+    margin-top: 16px;
+  }
+
+  @media (max-width: 980px) {
+    .cs-layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding-bottom: 80px;
+    }
+
+    .cs-toc {
+      display: none;
+    }
+
+    .arch-grid-branch {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cs-head {
+      padding-top: 72px;
+      padding-bottom: 48px;
+    }
+
+    .cs-cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cs-section {
+      margin-bottom: 52px;
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
    Dark-mode section overrides — PRD 00 §2
 
    .service sits on --bg-ink-soft, which is nearly identical to --bg-ink in dark
@@ -1805,12 +2508,19 @@ html[data-theme="dark"] .photo-frame {
 @media (max-width: 980px) {
   :root {
     --sidebar-w: 72px;
+    /* One column: the hero column is now nearly the full width, so the
+       headline can return to its old 6.4vw scale and keep three lines. */
+    --text-hero: clamp(40px, 6.4vw, 64px);
   }
 }
 
 @media (max-width: 640px) {
   :root {
     --sidebar-w: 64px;
+    /* Phones: the lines flow instead of breaking (`.hero-line` goes inline),
+       so only the longest *word* has to fit — "problems." at 10.5vw is well
+       inside a 320px screen's 212px column. */
+    --text-hero: min(40px, 10.5vw);
   }
 
   .wrap {
@@ -1852,10 +2562,6 @@ html[data-theme="dark"] .photo-frame {
   .coder-scene .steam {
     stroke-dashoffset: 0;
     opacity: 0.45;
-  }
-
-  .ticker-track {
-    animation: none !important;
   }
 
   /* the dot keeps its resting 4px halo — only the loop stops */

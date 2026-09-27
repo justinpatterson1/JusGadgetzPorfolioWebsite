@@ -1,9 +1,10 @@
 import type { ComponentType } from "react";
 
 import {
-  GlobeIcon,
+  CodeIcon,
+  DatabaseIcon,
   LayoutIcon,
-  PhoneIcon,
+  ServerIcon,
   TerminalIcon,
   type IconProps,
 } from "@/components/icons";
@@ -12,25 +13,30 @@ export type SkillCategory = {
   title: string;
   /** The component itself, not a string name — no registry to keep in sync. */
   icon: ComponentType<IconProps>;
-  /**
-   * Coral icon well instead of accent. Set on categories 2 and 4 so the two
-   * coral wells sit on a diagonal of the 2×2 grid.
-   */
+  /** Coral icon well instead of accent. */
   alt?: boolean;
-  /** Chip labels. Four to six reads well; past eight the cards stop aligning. */
+  /**
+   * Spans both columns. Set on the last category only, so an odd count ends
+   * on a full-width card rather than a hole in the grid.
+   */
+  wide?: boolean;
+  /** Chip labels. */
   items: readonly string[];
 };
 
 /**
- * Skills categories — PRD 09, design-system.md §7.5.
+ * Technical expertise — Prompt 15, design-system.md §7.5.
  *
- * **Keep the count even.** The grid is 2×2; a fifth category makes it 2+2+1
- * with the last card alone in the left column. If an odd count is ever wanted,
- * give the last card `grid-column: 1 / -1` rather than leaving the hole.
+ * Only what the portfolio's own experience and case studies back up: the
+ * mobile category, Vue.js, GraphQL, Figma and Framer Motion are gone, and AWS
+ * is "AWS / Cloud Fundamentals" because no certification has been earned yet
+ * (it is listed as in progress under Education). No proficiency ratings.
  *
- * `alt` on exactly categories 2 and 4 is the only place coral appears in the
- * light half of the page. The diagonal is what keeps it from looking arbitrary,
- * so reordering this list means re-deciding which two carry it.
+ * Layout: four categories in the 2×2 grid, then Engineering Practices spanning
+ * both columns — they are concepts rather than tools (Prompt 15), so the odd
+ * one out is also the one that reads as a different kind of list. `alt` sits on
+ * cards 2 and 3, the true diagonal of the 2×2 (row-major, 2 and 4 are both the
+ * right-hand column).
  */
 export const SKILLS: readonly SkillCategory[] = [
   {
@@ -38,11 +44,12 @@ export const SKILLS: readonly SkillCategory[] = [
     icon: LayoutIcon,
     items: [
       "React",
-      "TypeScript",
       "Next.js",
+      "TypeScript",
+      "JavaScript",
       "Tailwind CSS",
-      "Framer Motion",
-      "Vue.js",
+      "HTML",
+      "CSS",
     ],
   },
   {
@@ -51,22 +58,44 @@ export const SKILLS: readonly SkillCategory[] = [
     alt: true,
     items: [
       "Node.js",
-      "Python",
-      "PostgreSQL",
-      "GraphQL",
       "Express",
-      "Supabase",
+      "Python",
+      "Flask",
+      "REST APIs",
+      "Authentication & Authorization",
     ],
   },
   {
-    title: "Mobile & Native",
-    icon: PhoneIcon,
-    items: ["React Native", "Flutter", "iOS (Swift)", "Android (Kotlin)"],
+    title: "Databases & Data",
+    icon: DatabaseIcon,
+    alt: true,
+    items: ["SQL", "SQL Server", "PostgreSQL", "Prisma", "Neon", "Supabase"],
   },
   {
-    title: "DevOps & Tools",
-    icon: GlobeIcon,
-    alt: true,
-    items: ["Docker", "AWS", "CI/CD", "Git", "Vercel", "Figma"],
+    title: "DevOps & Automation",
+    icon: ServerIcon,
+    items: [
+      "Git / GitHub",
+      "Vercel",
+      "Docker",
+      "Jenkins",
+      "Windows Task Scheduler",
+      "PowerShell / Batch Automation",
+      "AWS / Cloud Fundamentals",
+    ],
+  },
+  {
+    title: "Engineering Practices",
+    icon: CodeIcon,
+    wide: true,
+    items: [
+      "API Integration",
+      "Database Design",
+      "Business Process Automation",
+      "Audit Logging",
+      "Error Handling & Monitoring",
+      "Secure Application Development",
+      "Production Troubleshooting",
+    ],
   },
 ] as const;

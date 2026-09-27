@@ -1,12 +1,25 @@
-import { ArrowIcon, DownloadIcon } from "@/components/icons";
+import {
+  ArrowIcon,
+  DownloadIcon,
+  GitHubIcon,
+  LinkedInIcon,
+} from "@/components/icons";
 import { Cta, HeroLede, Pill } from "@/components/ui";
+import { GITHUB_URL, LINKEDIN_URL } from "@/lib/content/contact";
+import { PERSON_TITLE, RESUME_URL } from "@/lib/content/profile";
 
 import { CoderScene } from "./coder-scene";
 import { HeroBackground } from "./hero-background";
 
+/** The two profile links beside the CTAs — Prompt 10, real URLs only. */
+const HERO_LINKS = [
+  { label: "GitHub", href: GITHUB_URL, icon: GitHubIcon },
+  { label: "LinkedIn", href: LINKEDIN_URL, icon: LinkedInIcon },
+] as const;
+
 /**
- * Section 01 — the hero. Spec: context/features/02-hero.md, with the layout and
- * copy detail from context/features/design/05-hero.md.
+ * Section 01 — the hero. Spec: context/features/10_HERO_SECTION.md, layered on
+ * the build from 02-hero.md and design/05-hero.md.
  *
  * It carries **no `id`**: it is the top of the page, and the rail's "Home" item
  * targets `null` rather than an element (see `NAV_ITEMS`). The scrollspy treats
@@ -29,38 +42,61 @@ export function Hero() {
       <div className="wrap relative z-[2]">
         <div className="grid grid-cols-[1.15fr_0.85fr] items-center gap-[60px] lap:grid-cols-1 lap:gap-12">
           <div>
-            <Pill>Available for freelance work</Pill>
+            {/* The professional title, above the fold (Prompt 10). */}
+            <Pill>{PERSON_TITLE}</Pill>
 
-            {/* The line breaks are hard `<br />`, not wrapping. The three-line
-                shape is the design, not a consequence of the measure — at any
-                width this stays three lines. */}
+            {/* Three designed lines, as block spans rather than `<br />` so
+                they can flow on phones (see `.hero-line`). The `{" "}`s keep a
+                space between them when they go inline. Only "problems" is
+                accented: `.accent` is inline-block, so accenting "business
+                problems" as one unit could not wrap on a narrow screen. */}
             <h1 className="hero-title m-0 mt-[22px] mb-6 text-hero text-ink">
-              Building digital
-              <br />
-              experiences with
-              <br />
-              <span className="accent">purpose</span>
+              <span className="hero-line">Building software</span>{" "}
+              <span className="hero-line">that solves real</span>{" "}
+              <span className="hero-line">
+                business <span className="accent">problems</span>
+              </span>
             </h1>
 
             <HeroLede>
-              I&apos;m a Full Stack Developer from the Caribbean isles of
-              Trinidad and Tobago, passionate about building exceptional digital
-              experiences. I help businesses launch, grow, and establish a
-              strong online presence through modern web solutions.
+              I&apos;m a Software Developer and Systems Analyst from Trinidad
+              &amp; Tobago, building full-stack applications, backend systems,
+              business automation and data-driven solutions. I turn complex
+              workflows into reliable software using modern web technologies,
+              APIs and databases.
             </HeroLede>
 
-            {/* flex-wrap, not shrink: below ~420px the two buttons stack rather
-                than squeeze. */}
-            <div className="flex flex-wrap gap-[14px]">
-              <Cta variant="accent" href="#projects">
+            {/* flex-wrap, not shrink: on narrow screens the row wraps rather
+                than squeezing the buttons. */}
+            <div className="flex flex-wrap items-center gap-[14px]">
+              <Cta variant="accent" href="#work">
                 View My Work
                 <ArrowIcon width={14} height={14} />
               </Cta>
-              {/* Placeholder — open-issues.md #5 tracks linking a real PDF. */}
-              <Cta variant="ghost" href="#">
-                Download Resume
-                <DownloadIcon width={14} height={14} />
-              </Cta>
+              {/* Rendered only once a real PDF is configured — see RESUME_URL
+                  in lib/content/profile.ts (open-issues.md #5). */}
+              {RESUME_URL !== null && (
+                <Cta variant="ghost" href={RESUME_URL} download>
+                  Download Resume
+                  <DownloadIcon width={14} height={14} />
+                </Cta>
+              )}
+
+              <ul className="m-0 flex list-none gap-2 p-0">
+                {HERO_LINKS.map(({ label, href, icon: Icon }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${label} (opens in a new tab)`}
+                      className="hero-social"
+                    >
+                      <Icon width={18} height={18} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
