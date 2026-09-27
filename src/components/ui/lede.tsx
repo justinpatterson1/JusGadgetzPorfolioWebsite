@@ -40,7 +40,7 @@ export function HeroLede({ children, className }: LedeProps) {
   return (
     <p
       className={cn(
-        "hero-lede mb-8 max-w-[540px] text-lede text-ink-2",
+        "hero-lede mb-8 max-w-[32em] text-hero-lede text-ink-2",
         className,
       )}
     >
