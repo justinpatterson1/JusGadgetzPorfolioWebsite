@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   ArrowIcon,
   DownloadIcon,
@@ -8,7 +10,6 @@ import { Cta, HeroLede, Pill } from "@/components/ui";
 import { GITHUB_URL, LINKEDIN_URL } from "@/lib/content/contact";
 import { PERSON_TITLE, RESUME_URL } from "@/lib/content/profile";
 
-import { CoderScene } from "./coder-scene";
 import { HeroBackground } from "./hero-background";
 
 /** The two profile links beside the CTAs — Prompt 10, real URLs only. */
@@ -40,7 +41,10 @@ export function Hero() {
       {/* z-2 over the background's z-0. `.hero` isolates, so these values can't
           reach the sidebar's z-50. */}
       <div className="wrap relative z-[2]">
-        <div className="grid grid-cols-[1.15fr_0.85fr] items-center gap-[60px] lap:grid-cols-1 lap:gap-12">
+        {/* minmax(0, …): a grid item's automatic minimum is its min-content
+            width, which would let the image's intrinsic 1536px push the track
+            wider than its share. */}
+        <div className="grid grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] items-center gap-12 lap:grid-cols-1">
           <div>
             {/* The professional title, above the fold (Prompt 10). */}
             <Pill>{PERSON_TITLE}</Pill>
@@ -100,12 +104,20 @@ export function Hero() {
             </div>
           </div>
 
-          {/* The card holds its 4:5 ratio at every width, which makes it very
-              tall once it goes full-width in one column — hence the cap below
-              980px. */}
-          <div className="hero-card lap:mx-auto lap:w-full lap:max-w-[420px]">
-            <CoderScene />
-          </div>
+          {/* Its own column, never behind the copy. Eager + high priority:
+              above the fold on every layout, and on desktop the largest
+              element in the first viewport. `sizes` tracks the column — at
+              about half the screen beside the copy (≤ ~780px), up to 720px when stacked. */}
+          <Image
+            src="/images/hero/architecture.png"
+            width={1306}
+            height={923}
+            alt="Software system architecture showing web applications, APIs, databases and automation"
+            sizes="(max-width: 980px) min(100vw, 720px), min(50vw, 800px)"
+            loading="eager"
+            fetchPriority="high"
+            className="hero-visual"
+          />
         </div>
       </div>
     </section>
