@@ -1,5 +1,5 @@
 import { ArrowIcon } from "@/components/icons";
-import { Eyebrow, H2, Lede } from "@/components/ui";
+import { Eyebrow, H2, Lede, Reveal } from "@/components/ui";
 import { SERVICES, type Service } from "@/lib/content/services";
 
 /**
@@ -18,18 +18,20 @@ export function Services() {
   return (
     <section id="services" className="section section-ink scroll-mt-10">
       <div className="wrap text-center">
-        <Eyebrow centered>What I Offer</Eyebrow>
-        <H2>Services &amp; Solutions.</H2>
-        <Lede centered>
-          Software services built around real business requirements.
-        </Lede>
+        <Reveal>
+          <Eyebrow centered>What I Offer</Eyebrow>
+          <H2>Services &amp; Solutions.</H2>
+          <Lede centered>
+            Software services built around real business requirements.
+          </Lede>
+        </Reveal>
 
         {/* A list, so the six are announced as a set. */}
-        <ul className="services-grid text-left">
+        <Reveal as="ul" stagger className="services-grid text-left">
           {SERVICES.map((service) => (
             <ServiceCard key={service.title} service={service} />
           ))}
-        </ul>
+        </Reveal>
       </div>
     </section>
   );

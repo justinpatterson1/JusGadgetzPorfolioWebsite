@@ -21,7 +21,7 @@ export function SidebarBrand() {
     <a
       {...link}
       aria-label={link.href === "/" ? "Home" : "Back to top"}
-      className="group relative mb-9 flex size-11 shrink-0 items-center justify-center rounded-xl bg-ink text-bg transition-colors duration-200 ease-hover hover:bg-accent hand:size-10"
+      className="group relative mb-9 flex size-11 shrink-0 items-center justify-center rounded-xl bg-ink text-bg transition-colors duration-200 ease-hover hover:bg-accent hand:size-10 short:mb-3 short:size-9"
     >
       <span aria-hidden className="text-title font-bold">
         J

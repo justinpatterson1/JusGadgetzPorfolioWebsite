@@ -45,7 +45,10 @@ export function Hero() {
             width, which would let the image's intrinsic 1536px push the track
             wider than its share. */}
         <div className="grid grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] items-center gap-12 lap:grid-cols-1">
-          <div>
+          {/* `.hero-copy` staggers its four children in on load — pill, H1,
+              lede, actions — in CSS, so the hero still ships no JavaScript.
+              Keep them as four direct children or the stagger shifts. */}
+          <div className="hero-copy">
             {/* The professional title, above the fold (Prompt 10). */}
             <Pill>{PERSON_TITLE}</Pill>
 
@@ -107,7 +110,8 @@ export function Hero() {
           {/* Its own column, never behind the copy. Eager + high priority:
               above the fold on every layout, and on desktop the largest
               element in the first viewport. `sizes` tracks the column — at
-              about half the screen beside the copy (≤ ~780px), up to 720px when stacked. */}
+              about half the screen beside the copy (≤ ~780px), up to 720px when stacked.
+              `.hero-visual` also carries its entrance and the slow float. */}
           <Image
             src="/images/hero/architecture.png"
             width={1306}

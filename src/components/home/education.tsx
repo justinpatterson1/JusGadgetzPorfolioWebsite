@@ -1,5 +1,5 @@
 import { CapIcon } from "@/components/icons";
-import { Eyebrow, H2 } from "@/components/ui";
+import { Eyebrow, H2, Reveal } from "@/components/ui";
 import {
   COMPLETED,
   IN_PROGRESS,
@@ -25,10 +25,13 @@ export function Education() {
   return (
     <section id="education" className="section scroll-mt-10">
       <div className="wrap">
-        <Eyebrow>Learning</Eyebrow>
-        <H2>Education &amp; Professional Development.</H2>
+        <Reveal>
+          <Eyebrow>Learning</Eyebrow>
+          <H2>Education &amp; Professional Development.</H2>
+        </Reveal>
 
-        <div className="edu-grid">
+        {/* The two groups — completed, in progress — enter one after the other. */}
+        <Reveal stagger className="edu-grid">
           <div>
             <h3 className="edu-group-title text-card-tag">Completed</h3>
             <ul className="edu-list">
@@ -56,7 +59,7 @@ export function Education() {
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

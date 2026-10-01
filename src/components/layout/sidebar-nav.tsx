@@ -106,7 +106,7 @@ export function SidebarNav() {
 
   return (
     <nav aria-label="Sections" className="flex flex-1 items-center">
-      <ul className="m-0 flex w-full list-none flex-col items-center gap-2 p-0">
+      <ul className="m-0 flex w-full list-none flex-col items-center gap-2 p-0 short:gap-1">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.label}
@@ -142,7 +142,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
         aria-label={item.label}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "group relative flex size-12 items-center justify-center rounded-xl hand:size-10.5",
+          "group relative flex size-12 items-center justify-center rounded-xl hand:size-10.5 short:size-9",
           "transition-colors duration-200 ease-hover",
           active
             ? "bg-accent-soft text-accent"

@@ -23,7 +23,7 @@ export function SidebarCta() {
     <a
       {...link}
       aria-label="Let's Talk"
-      className="group relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-[background-color,translate] duration-200 ease-hover hover:-translate-y-0.5 hover:bg-accent-strong hand:size-10.5"
+      className="group relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-[background-color,translate] duration-200 ease-hover hover:-translate-y-0.5 hover:bg-accent-strong hand:size-10.5 short:size-9"
     >
       <ArrowIcon width={18} height={18} />
       <SidebarTooltip>Let&apos;s Talk</SidebarTooltip>

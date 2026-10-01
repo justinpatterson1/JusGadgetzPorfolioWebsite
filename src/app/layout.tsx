@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
+import { RevealObserver } from "@/components/ui/reveal-observer";
 import { PERSON_NAME, PERSON_TITLE } from "@/lib/content/profile";
 import { SITE_URL } from "@/lib/site-url";
 import { PALETTES, DEFAULT_PALETTE } from "@/lib/theme/palettes";
@@ -24,12 +25,13 @@ import "./globals.css";
 /**
  * Poppins is not a variable font, so the weights are enumerated.
  * 400 body · 500 nav/labels/buttons · 600 card titles, stat numbers, eyebrows ·
- * 700 h1/h2/brand. 300 and 800 are headroom for the Tweaks headline-weight
- * slider (range 500–800) — PRD 00 §1.
+ * 700 h1/h2/brand. Nothing else is loaded: there is no Tweaks panel, so the
+ * headline-weight range is held to the weights the site already ships
+ * (HEADLINE_WEIGHT_MIN/MAX). Add 800 back here if that range ever widens.
  */
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-poppins",
 });
@@ -82,6 +84,25 @@ export const metadata: Metadata = {
  */
 const themeBootstrap = `
 (function () {
+  /* Opt in to scroll reveals (<Reveal>, RevealObserver). Content is hidden
+     only under this flag, so without IntersectionObserver, with motion
+     reduced, or with scripts off, every section simply renders visible. Its
+     own try: it must not depend on storage being available. */
+  try {
+    if ('IntersectionObserver' in window &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var html = document.documentElement;
+      html.dataset.revealReady = '';
+      /* Safety net: if the app's JavaScript never starts (a failed chunk, a
+         hydration error, a blocked script), RevealObserver never marks
+         anything revealed. Turn reveals off rather than leave every section
+         below the hero invisible. */
+      setTimeout(function () {
+        if (!('revealLive' in html.dataset)) delete html.dataset.revealReady;
+      }, 4000);
+    }
+  } catch (e) { /* leave reveals off — content stays visible */ }
+
   try {
     var root = document.documentElement;
     var palettes = ${JSON.stringify(PALETTES)};
@@ -144,6 +165,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: themeBootstrap }}
         />
         <ThemeProvider>{children}</ThemeProvider>
+        <RevealObserver />
       </body>
     </html>
   );
