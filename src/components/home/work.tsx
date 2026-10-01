@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ArrowIcon, ExternalIcon } from "@/components/icons";
-import { Cta, Eyebrow, H2, Lede } from "@/components/ui";
+import { Cta, Eyebrow, H2, Lede, Reveal } from "@/components/ui";
 import {
   CASE_STUDIES,
   caseStudyHref,
@@ -47,7 +47,7 @@ export function Work() {
     <section id="work" className="section scroll-mt-10">
       <div className="wrap">
         {/* The only split header on the site. */}
-        <div className="projects-head">
+        <Reveal className="projects-head">
           <div>
             <Eyebrow>Case Studies</Eyebrow>
             <H2>Selected Work.</H2>
@@ -68,7 +68,7 @@ export function Work() {
             <ExternalIcon width={13} height={13} />
             <span className="sr-only"> (opens in a new tab)</span>
           </Cta>
-        </div>
+        </Reveal>
 
         <div className="work-stack">
           <WorkSlider

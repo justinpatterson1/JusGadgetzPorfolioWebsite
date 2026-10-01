@@ -43,3 +43,6 @@ next-env.d.ts
 # project docs and agent config (kept local by choice)
 /context/
 /.claude/
+
+# source artwork (originals of what ships in public/)
+/assets/

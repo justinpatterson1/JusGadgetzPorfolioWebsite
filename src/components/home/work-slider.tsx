@@ -43,6 +43,10 @@ export function WorkSlider({
   const trackId = useId();
   const [first, setFirst] = useState(0);
   const [perView, setPerView] = useState(1);
+  /* What the live region says. Set only by the arrow buttons — the visible
+     readout also follows swipes and resizes, and announcing every one of
+     those would talk over whatever the user is reading. */
+  const [announcement, setAnnouncement] = useState("");
 
   /* Which card is leftmost, and how many fit — re-read on scroll and resize so
      the readout follows swipes as well as clicks. */
@@ -82,22 +86,22 @@ export function WorkSlider({
     const atEnd = track.scrollLeft >= max - 2;
     const atStart = track.scrollLeft <= 2;
 
+    let target: number;
     if (direction === 1 && atEnd) {
+      target = 0;
       track.scrollTo({ left: 0, behavior });
     } else if (direction === -1 && atStart) {
+      target = count - perView;
       track.scrollTo({ left: max, behavior });
     } else {
+      target = first + direction;
       track.scrollBy({ left: direction * stepOf(track), behavior });
     }
+    /* The destination, known now — the smooth scroll hasn't landed yet. */
+    setAnnouncement(formatPosition(clamp(target, 0, count - perView), perView, count));
   };
 
-  const last = Math.min(count, first + perView);
-  const position =
-    perView >= count
-      ? `All ${count} shown`
-      : perView === 1
-        ? `${first + 1} of ${count}`
-        : `${first + 1}–${last} of ${count}`;
+  const position = formatPosition(first, perView, count);
   /* Nothing to slide when every card already fits (a wide screen, or a short
      list) — hide the arrows rather than offer buttons that do nothing. */
   const scrollable = perView < count;
@@ -108,13 +112,20 @@ export function WorkSlider({
       aria-roledescription="carousel"
       aria-label={label}
     >
-      <div className="work-slider-head">
+      {/* Scroll reveals (see <Reveal>, which can't carry the track's ref):
+          the head row arrives as a block and the cards stagger in. The
+          track's 12px/44px block padding leaves room for the rise inside its
+          scroll clip. */}
+      <div className="work-slider-head" data-reveal="">
         <div>{heading}</div>
 
         {scrollable && (
           <div className="work-slider-controls">
-            <p className="work-slider-pos text-label" aria-live="polite">
+            <p className="work-slider-pos text-label" aria-hidden>
               {position}
+            </p>
+            <p className="sr-only" aria-live="polite">
+              {announcement}
             </p>
             <button
               type="button"
@@ -138,11 +149,27 @@ export function WorkSlider({
         )}
       </div>
 
-      <ul id={trackId} ref={trackRef} className={`work-track work-track-${variant}`}>
+      <ul
+        id={trackId}
+        ref={trackRef}
+        className={`work-track work-track-${variant}`}
+        data-reveal="stagger"
+      >
         {children}
       </ul>
     </div>
   );
+}
+
+/** The position readout for the card at index `first`, e.g. "2–3 of 3". */
+function formatPosition(first: number, perView: number, count: number): string {
+  if (perView >= count) return `All ${count} shown`;
+  if (perView === 1) return `${first + 1} of ${count}`;
+  return `${first + 1}–${Math.min(count, first + perView)} of ${count}`;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
 
 /** The track's column gap in px — the space between two cards. */

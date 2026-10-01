@@ -35,7 +35,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggleMode}
       aria-label={ready ? `Switch to ${label.toLowerCase()}` : "Switch theme"}
-      className="group relative flex size-12 items-center justify-center rounded-xl border border-hair bg-surface-2 text-ink-3 transition-colors duration-200 ease-hover hover:text-ink hand:size-10.5"
+      className="group relative flex size-12 items-center justify-center rounded-xl border border-hair bg-surface-2 text-ink-3 transition-colors duration-200 ease-hover hover:text-ink hand:size-10.5 short:size-9"
     >
       {/* a fixed-size box so the two absolutely-positioned glyphs have
           something to center in, and the button never reflows mid-swap */}

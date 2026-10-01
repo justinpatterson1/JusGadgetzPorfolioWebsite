@@ -120,7 +120,8 @@ export function CaseStudyView({ study }: { study: CaseStudy }) {
                 height={study.image.height}
                 alt={study.image.alt}
                 sizes="(max-width: 1264px) 100vw, 1200px"
-                priority
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
           )}

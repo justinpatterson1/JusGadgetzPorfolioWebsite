@@ -1,4 +1,5 @@
 import { MailIcon } from "@/components/icons";
+import { Reveal } from "@/components/ui";
 import { CONTACT_EMAIL, SOCIAL_LINKS, type SocialLink } from "@/lib/content/contact";
 import { PERSON_NAME } from "@/lib/content/profile";
 
@@ -21,7 +22,7 @@ import { PERSON_NAME } from "@/lib/content/profile";
 export function Footer() {
   return (
     <footer id="contact" className="footer scroll-mt-10">
-      <div className="wrap">
+      <Reveal className="wrap">
         <div className="footer-grid">
           <div>
             {/* The accented word carries its period, as before — the whole
@@ -54,8 +55,10 @@ export function Footer() {
         </div>
 
         <div className="footer-bottom">
+          {/* The year is read at build time — every page is prerendered, so
+              it rolls over with the first deploy of the new year. */}
           <p>
-            © 2026 {PERSON_NAME}. All rights reserved.
+            © {new Date().getFullYear()} {PERSON_NAME}. All rights reserved.
           </p>
           {/* Name the stack this site is actually built on (open issue #13).
               The glyph is hidden and spoken as "love" — a screen reader would
@@ -68,7 +71,7 @@ export function Footer() {
             <span className="sr-only">love</span> using Next.js &amp; Tailwind
           </p>
         </div>
-      </div>
+      </Reveal>
     </footer>
   );
 }

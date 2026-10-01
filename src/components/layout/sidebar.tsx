@@ -16,12 +16,17 @@ import { ThemeToggle } from "./theme-toggle";
  *
  * It narrows rather than collapsing to a hamburger. That is deliberate
  * (open-issues.md #21): an icon rail is already compact.
+ *
+ * On short screens (`short:`, ≤600px tall — a landscape phone) the tiles and
+ * gaps tighten and the rail scrolls, so Contact and the theme toggle can't
+ * fall off the bottom. The scroll clips the rail's tooltips in that mode;
+ * that's the trade, and those screens are almost all touch, with no hover.
  */
 export function Sidebar() {
   return (
     <aside
       aria-label="Primary"
-      className="fixed inset-y-0 left-0 z-50 flex w-[var(--sidebar-w)] flex-col items-center border-r border-hair bg-bg-elev py-6 shadow-[0_0_40px_-28px_var(--shadow-lift)]"
+      className="fixed inset-y-0 left-0 z-50 flex w-[var(--sidebar-w)] flex-col items-center border-r border-hair bg-bg-elev py-6 shadow-[0_0_40px_-28px_var(--shadow-lift)] short:overflow-y-auto short:py-3 short:[scrollbar-width:none]"
     >
       <SidebarBrand />
       <SidebarNav />

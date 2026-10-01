@@ -17,9 +17,13 @@ import type { ThemeMode } from "./theme";
 export const BG_WARM = "#fbf9f6";
 export const BG_COOL = "#f5f6f8";
 
-/** Inclusive bounds for the headline weight slider. */
+/**
+ * Inclusive bounds for the headline weight slider. Capped at 700, the
+ * heaviest Poppins weight the root layout loads — anything above would be
+ * synthesised bold.
+ */
 export const HEADLINE_WEIGHT_MIN = 500;
-export const HEADLINE_WEIGHT_MAX = 800;
+export const HEADLINE_WEIGHT_MAX = 700;
 
 export type Tweaks = {
   /** false swaps the light-mode page background to the cool neutral. */

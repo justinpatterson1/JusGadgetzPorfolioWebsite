@@ -1,4 +1,4 @@
-import { Eyebrow, H2, Lede } from "@/components/ui";
+import { Eyebrow, H2, Lede, Reveal } from "@/components/ui";
 import {
   PERSON_LOCATION,
   PERSON_NAME,
@@ -21,7 +21,8 @@ import {
 export function About() {
   return (
     <section id="about" className="section scroll-mt-10">
-      <div className="wrap">
+      {/* One block: the photo and copy arrive together. */}
+      <Reveal className="wrap">
         <div className="grid grid-cols-[0.85fr_1.15fr] items-center gap-[72px] lap:grid-cols-1 lap:gap-10">
           {/* 72px is the widest gap on the site — the decorations extend 22px
               past the frame on both diagonals and need the room. */}
@@ -79,7 +80,7 @@ export function About() {
             </dl>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

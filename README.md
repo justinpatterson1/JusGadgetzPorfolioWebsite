@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Justin Patterson — Portfolio
 
-## Getting Started
+The personal site of Justin Patterson, Software Developer & Systems Analyst
+(Trinidad & Tobago): a single-page portfolio plus a case-study page for each
+project.
 
-First, run the development server:
+Built with Next.js 16 (App Router), React 19, TypeScript and Tailwind CSS 4.
+Every route is prerendered as static HTML.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # production build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Path | What |
+| --- | --- |
+| `src/app/` | Routes: the homepage, `/work/[slug]` case studies, 404, `robots.txt`, `sitemap.xml` |
+| `src/components/home/` | Homepage sections, in page order |
+| `src/components/layout/` | The fixed sidebar rail and theme toggle |
+| `src/components/work/` | The case-study template and architecture diagram |
+| `src/components/ui/` | Shared primitives (headings, CTAs, chips, scroll reveal) |
+| `src/lib/content/` | **All site copy and links** — edit here, not in the markup |
+| `src/lib/theme/` | Light/dark theme and accent palettes |
+| `src/app/globals.css` | Design tokens, component styles, motion |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Adding a project is one entry in `src/lib/content/case-studies.ts`; its card
+and its `/work/<slug>` page follow from it.
 
-## Learn More
+## Configuration
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata, sitemap and robots. Falls back to Vercel's production URL, then localhost. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Security headers (CSP, HSTS and friends) are set in `next.config.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Before launch
 
-## Deploy on Vercel
+Values that are deliberately `null` until real ones exist — the UI hides
+whatever they would drive rather than showing placeholders:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `CONTACT_EMAIL` — `src/lib/content/contact.ts`
+- `RESUME_URL` — `src/lib/content/profile.ts`

@@ -1,4 +1,4 @@
-import { Chip, Chips, Eyebrow, H2, Lede } from "@/components/ui";
+import { Chip, Chips, Eyebrow, H2, Lede, Reveal } from "@/components/ui";
 import { SKILLS, type SkillCategory } from "@/lib/content/skills";
 
 /**
@@ -17,17 +17,19 @@ export function Skills() {
   return (
     <section id="skills" className="section skills-section scroll-mt-10">
       <div className="wrap">
-        <Eyebrow>Toolbox</Eyebrow>
-        <H2>Technical Expertise.</H2>
-        <Lede>
-          The languages, platforms and practices behind the work above.
-        </Lede>
+        <Reveal>
+          <Eyebrow>Toolbox</Eyebrow>
+          <H2>Technical Expertise.</H2>
+          <Lede>
+            The languages, platforms and practices behind the work above.
+          </Lede>
+        </Reveal>
 
-        <div className="skills-grid">
+        <Reveal stagger className="skills-grid">
           {SKILLS.map((category) => (
             <SkillCard key={category.title} category={category} />
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

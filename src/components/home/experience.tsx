@@ -1,5 +1,5 @@
 import { BriefcaseIcon } from "@/components/icons";
-import { Eyebrow, H2, Lede } from "@/components/ui";
+import { Eyebrow, H2, Lede, Reveal } from "@/components/ui";
 import { ROLES, type Role } from "@/lib/content/experience";
 
 /**
@@ -21,18 +21,20 @@ export function Experience() {
   return (
     <section id="experience" className="section scroll-mt-10">
       <div className="wrap">
-        <Eyebrow>Experience</Eyebrow>
-        <H2>Professional Experience.</H2>
-        <Lede>
-          Building and supporting software, integrations and automated
-          workflows used in real business operations.
-        </Lede>
+        <Reveal>
+          <Eyebrow>Experience</Eyebrow>
+          <H2>Professional Experience.</H2>
+          <Lede>
+            Building and supporting software, integrations and automated
+            workflows used in real business operations.
+          </Lede>
+        </Reveal>
 
-        <div className="xp-list">
+        <Reveal stagger className="xp-list">
           {ROLES.map((role) => (
             <RoleCard key={role.title} role={role} />
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

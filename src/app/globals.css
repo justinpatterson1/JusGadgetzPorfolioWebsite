@@ -21,6 +21,10 @@
 @custom-variant dark (&:where(html[data-theme="dark"], html[data-theme="dark"] *));
 @custom-variant lap (@media (max-width: 980px));
 @custom-variant hand (@media (max-width: 640px));
+/* Height, not width: the sidebar rail stacks nine tiles (~570px), which a
+   landscape phone can't fit. Declared after `hand` so it wins where both
+   match. Used by the sidebar only. */
+@custom-variant short (@media (max-height: 600px));
 
 /* Primitives retarget themselves inside a dark section (PRD 01 §1.2): the lede
    drops to --on-ink-2 and the eyebrow flips from accent to coral. This is the
@@ -785,6 +789,151 @@ html[data-theme="dark"] {
   }
   75% {
     transform: translate(-30px, -20px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Entrance and reveal motion
+   Spec: context/current-feature.md (subtle site animations, 2026-09-27).
+
+   Everything here animates `opacity` and the individual `translate` / `scale`
+   properties — never `transform`. The cards' hover lifts are `transform`
+   (.skill-card, .service, .work-feature, .work-card), and an animation that
+   held `transform` with a forward fill would beat those hovers for good;
+   `translate` composes with `transform` instead, so the two never collide.
+
+   Distances are variables so phones can take smaller moves (the 640px
+   override at the bottom of the file). The reduced-motion guard switches all
+   of it off.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --hero-rise: 20px;
+  --hero-visual-rise: 24px;
+  --hero-float: -6px;
+  --reveal-rise: 25px;
+  --reveal-rise-child: 15px;
+  /* A beat before every entrance — the hero on load, each section on
+     arrival — so the motion reads as deliberate rather than instant. */
+  --enter-delay: 1.0s;
+}
+
+@layer components {
+  /* Hero copy — pill, H1, lede, CTA row, 110ms apart after --enter-delay. CSS
+     only, so it runs from first paint with no JavaScript. The last row is
+     fully in by ~1.45s. Chrome doesn't count an element for LCP while it's at
+     opacity 0, so the delay pushes the H1's paint out too — keep it small. */
+  .hero-copy > * {
+    animation: hero-rise 0.6s var(--ease-enter) both;
+    animation-delay: calc(var(--enter-delay) + var(--hero-i, 0) * 110ms);
+  }
+
+  .hero-copy > :nth-child(2) {
+    --hero-i: 1;
+  }
+  .hero-copy > :nth-child(3) {
+    --hero-i: 2;
+  }
+  .hero-copy > :nth-child(4) {
+    --hero-i: 3;
+  }
+
+  /* Architecture image — enters just after the H1 starts, then floats.
+
+     Two animations on one element. The float's delay equals the entrance's
+     end (--enter-delay + 0.18s + 1s), and during that delay the float doesn't
+     apply at all, so the entrance's fill holds `translate: 0` right up to the
+     frame the float takes over from 0 — no jump at the handoff. It starts at
+     .15 opacity, not 0, so the image counts as painted from the first frame.
+
+     The float is a translate on an image with no layout role, so it can't
+     shift, overlap or clip anything: 6px up sits inside the hero's padding. */
+  .hero-visual {
+    animation:
+      hero-visual-in 1s var(--ease-enter) calc(var(--enter-delay) + 0.18s) both,
+      hero-float 6s ease-in-out calc(var(--enter-delay) + 1.18s) infinite;
+  }
+
+  /* Scroll reveals — see <Reveal>. Hidden only once the bootstrap has set
+     `data-reveal-ready`, revealed once when RevealObserver sets
+     `data-revealed`. The animation's forward fill holds the final state. */
+  [data-reveal-ready] [data-reveal=""],
+  [data-reveal-ready] [data-reveal="stagger"] > * {
+    opacity: 0;
+  }
+
+  [data-reveal-ready] [data-reveal=""][data-revealed] {
+    --reveal-distance: var(--reveal-rise);
+    animation: reveal-up 0.7s var(--ease-enter) var(--enter-delay) both;
+  }
+
+  /* Cards 90ms apart after --enter-delay, capped at the eighth so a long list
+     never keeps anyone waiting — the last card starts by 1.13s. */
+  [data-reveal-ready] [data-reveal="stagger"][data-revealed] > * {
+    --reveal-distance: var(--reveal-rise-child);
+    animation: reveal-up 0.6s var(--ease-enter) both;
+    animation-delay: calc(var(--enter-delay) + var(--reveal-i, 0) * 90ms);
+  }
+
+  [data-reveal="stagger"] > :nth-child(2) {
+    --reveal-i: 1;
+  }
+  [data-reveal="stagger"] > :nth-child(3) {
+    --reveal-i: 2;
+  }
+  [data-reveal="stagger"] > :nth-child(4) {
+    --reveal-i: 3;
+  }
+  [data-reveal="stagger"] > :nth-child(5) {
+    --reveal-i: 4;
+  }
+  [data-reveal="stagger"] > :nth-child(6) {
+    --reveal-i: 5;
+  }
+  [data-reveal="stagger"] > :nth-child(7) {
+    --reveal-i: 6;
+  }
+  [data-reveal="stagger"] > :nth-child(n + 8) {
+    --reveal-i: 7;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    translate: 0 var(--hero-rise);
+  }
+}
+
+@keyframes hero-visual-in {
+  from {
+    opacity: 0.15;
+    translate: 0 var(--hero-visual-rise);
+    scale: 0.97;
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 var(--hero-float);
+  }
+}
+
+/* Both ends explicit: the elements rest at opacity 0 until revealed, so a
+   `from`-only keyframe would animate back to that 0. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 var(--reveal-distance);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
   }
 }
 
@@ -2322,6 +2471,14 @@ html[data-theme="dark"] .photo-frame {
        so only the longest *word* has to fit — "problems." at 10.5vw is well
        inside a 320px screen's 212px column. */
     --text-hero: min(40px, 10.5vw);
+
+    /* Smaller moves on phones: the same motion at a third less distance
+       reads as the same gesture on a narrower screen. */
+    --hero-rise: 14px;
+    --hero-visual-rise: 16px;
+    --hero-float: -4px;
+    --reveal-rise: 16px;
+    --reveal-rise-child: 10px;
   }
 
   .wrap {
@@ -2349,6 +2506,21 @@ html[data-theme="dark"] .photo-frame {
   .blob,
   .particle,
   .hero-orbit {
+    animation: none !important;
+  }
+
+  /* Entrances and the float stop outright: content is simply there. The
+     bootstrap doesn't opt in to reveals under reduced motion, so nothing is
+     hidden on load; this rule covers the preference changing mid-visit, so
+     nothing hidden can be left behind either. */
+  .hero-copy > *,
+  .hero-visual {
+    animation: none !important;
+  }
+
+  [data-reveal-ready] [data-reveal=""],
+  [data-reveal-ready] [data-reveal="stagger"] > * {
+    opacity: 1 !important;
     animation: none !important;
   }
 
