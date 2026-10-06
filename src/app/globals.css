@@ -816,7 +816,7 @@ html[data-theme="dark"] {
   --reveal-rise-child: 15px;
   /* A beat before every entrance — the hero on load, each section on
      arrival — so the motion reads as deliberate rather than instant. */
-  --enter-delay: 1.0s;
+  --enter-delay: 0.75s;
 }
 
 @layer components {
@@ -1028,58 +1028,6 @@ html[data-theme="dark"] {
     bottom: -22px;
     background: var(--co-coral);
     border-color: var(--co-coral);
-  }
-
-  /* The identity card that stands in for a photo (Prompt 10): no placeholder
-     text, no empty-slot graphic. The monogram tile is the sidebar brand mark
-     at 112px — --ink ground, --bg letters, accent corner dot — so it reads as
-     the site's own mark rather than a stand-in. Delete these rules with the
-     block in about.tsx when a real photo lands. */
-  .photo-id {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px;
-    text-align: center;
-  }
-
-  .photo-id-mark {
-    position: relative;
-    display: grid;
-    place-items: center;
-    width: 112px;
-    height: 112px;
-    margin-bottom: 22px;
-    border-radius: 28px;
-    color: var(--bg);
-    background: var(--ink);
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    box-shadow: 0 30px 60px -30px var(--shadow-deep);
-  }
-
-  .photo-id-mark::after {
-    content: "";
-    position: absolute;
-    right: 16px;
-    bottom: 16px;
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    background: var(--accent);
-  }
-
-  .photo-id-place {
-    margin-top: 16px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    color: var(--ink-2);
-    background: var(--bg-elev);
-    border: 1px solid var(--hair);
   }
 }
 

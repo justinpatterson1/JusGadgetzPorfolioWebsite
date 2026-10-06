@@ -1,9 +1,7 @@
+import Image from "next/image";
+
 import { Eyebrow, H2, Lede, Reveal } from "@/components/ui";
-import {
-  PERSON_LOCATION,
-  PERSON_NAME,
-  PERSON_TITLE,
-} from "@/lib/content/profile";
+import { PERSON_NAME } from "@/lib/content/profile";
 
 /**
  * Section 02 — About. Spec: context/features/11_ABOUT_SECTION.md, layered on
@@ -30,23 +28,17 @@ export function About() {
             <div className="photo-deco photo-deco-1" aria-hidden />
             <div className="photo-deco photo-deco-2" aria-hidden />
             <div className="photo-frame">
-              {/* No photo exists in the repo, so the frame is an identity card
-                  rather than an empty slot (Prompt 10: no placeholder text, no
-                  broken image, no stock or generated person). To use a real
-                  photo, replace this block with:
-                    <Image src="/me.jpg" alt={PERSON_NAME} fill sizes="400px" />
-                  (next/image — `fill` needs the positioned parent .photo-frame
-                  already provides, and the frame's `img` rule in globals.css
-                  covers it edge to edge). Source image: 4:5 portrait, at least
-                  800×1000, subject centered. Tracked as open-issues.md #7. */}
-              <div className="photo-id">
-                <div className="photo-id-mark" aria-hidden>
-                  JP
-                </div>
-                <p className="text-title text-ink">{PERSON_NAME}</p>
-                <p className="mt-1 text-label text-ink-3">{PERSON_TITLE}</p>
-                <p className="photo-id-place text-pill">{PERSON_LOCATION}</p>
-              </div>
+              {/* `fill` sizes to the positioned .photo-frame, and the frame's
+                  `img` rule in globals.css covers it edge to edge. The source
+                  is 3:4 and the frame 4:5, so `cover` trims ~3% off the top
+                  and bottom — the full figure stays in. `sizes` tracks the
+                  column: up to 400px stacked, about 480px beside the copy. */}
+              <Image
+                src="/images/about/justin.jpeg"
+                alt={`${PERSON_NAME} standing in a resort pool, with palm trees in the background`}
+                fill
+                sizes="(max-width: 980px) 400px, 480px"
+              />
             </div>
           </div>
 
